@@ -29,6 +29,64 @@
       --radius-sm:         8px;
     }
 
+    /* ── Dark mode tokens ── */
+    body.dark-mode {
+      --bg-page:           #0f1117;
+      --bg-card:           #1a1d27;
+      --text-primary:      #E8EDF2;
+      --text-secondary:    #8FA3BA;
+      --border:            #2E3A4A;
+      --shadow-card:       0 2px 8px rgba(0,0,0,.4), 0 0 2px rgba(0,0,0,.3);
+      --shadow-hover:      0 6px 20px rgba(0,0,0,.5), 0 1px 4px rgba(0,0,0,.4);
+    }
+
+    /* ── Dark mode section overrides ── */
+    body.dark-mode #executive,
+    body.dark-mode #concept,
+    body.dark-mode #future  { background: #13161f; }
+    body.dark-mode #context,
+    body.dark-mode #research,
+    body.dark-mode #limitations { background: #0f1117; }
+    body.dark-mode .exec-card,
+    body.dark-mode .hcd-card,
+    body.dark-mode .future-card,
+    body.dark-mode .eval-card,
+    body.dark-mode .limit-item,
+    body.dark-mode .finding-card,
+    body.dark-mode .persona-card { background: #1a1d27; border-color: #2E3A4A; }
+    body.dark-mode .future-card:hover { background: #1a2a3d; }
+    body.dark-mode .exec-card h3,
+    body.dark-mode .hcd-card h3,
+    body.dark-mode .finding-card h3,
+    body.dark-mode .limit-item h4 { color: var(--text-primary); }
+    body.dark-mode .joule-mockup { background: #1a1d27; border-color: #2E3A4A; }
+    body.dark-mode .score-item .score-label { color: var(--text-secondary); }
+    body.dark-mode .psa-intro-card,
+    body.dark-mode .psa-impact-card { background: #1a1d27; }
+    body.dark-mode .psa-impact-num { background: #0f2a4a; color: var(--sap-accent); }
+    body.dark-mode .hyp-card { background: #1a1d27; border-color: #2E3A4A; }
+    body.dark-mode .hyp-card p,
+    body.dark-mode .hyp-card h3 { color: var(--text-primary); }
+
+    /* ── Theme toggle button ── */
+    .theme-toggle {
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 20px;
+      padding: 5px 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: rgba(255,255,255,.85);
+      font-size: 12px;
+      font-weight: 600;
+      transition: background .2s, border-color .2s;
+      white-space: nowrap;
+    }
+    .theme-toggle:hover { background: rgba(255,255,255,.18); border-color: rgba(255,255,255,.35); }
+    .theme-toggle .toggle-icon { font-size: 14px; }
+
     /* ── Reset & base ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
@@ -880,6 +938,10 @@
     <li><a href="#psa-impact">PSA Impact</a></li>
     <li><a href="#conclusion">Conclusion</a></li>
   </ul>
+  <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+    <span class="toggle-icon">🌙</span>
+    <span id="toggleLabel">Dark</span>
+  </button>
 </nav>
 
 <!-- ────────────────── DISCLAIMER STRIP ────────────────── -->
@@ -2288,6 +2350,25 @@
   <p style="margin-top:4px;">Industry Partner: SAP SE, Business Suite UX &nbsp;·&nbsp; Supervisors: Anja Laufer, Julia Mohr, Andreas Hammerschmidt</p>
   <p style="margin-top:12px;font-size:11px;">© 2026 SAP SE or an SAP affiliate company. All rights reserved. Research conducted in collaboration with Technische Hochschule Ingolstadt.</p>
 </footer>
+
+<script>
+  function toggleTheme() {
+    const isDark = document.body.classList.toggle('dark-mode');
+    document.getElementById('toggleLabel').textContent = isDark ? 'Light' : 'Dark';
+    document.querySelector('.theme-toggle .toggle-icon').textContent = isDark ? '☀️' : '🌙';
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  }
+
+  // Apply saved preference on load
+  (function () {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'dark') {
+      document.body.classList.add('dark-mode');
+      document.getElementById('toggleLabel').textContent = 'Light';
+      document.querySelector('.theme-toggle .toggle-icon').textContent = '☀️';
+    }
+  })();
+</script>
 
 </body>
 </html>
