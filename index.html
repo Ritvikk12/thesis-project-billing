@@ -1,0 +1,2179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reactive to Proactive Project Billing — Ritvik Kolhe</title>
+  <style>
+    /* ── SAP Fiori Horizon design tokens ── */
+    :root {
+      --sap-blue:          #0070F2;
+      --sap-blue-dark:     #0040B0;
+      --sap-navy:          #07074F;
+      --sap-navy-mid:      #1C2B5E;
+      --sap-accent:        #0FAAFF;
+      --sap-teal:          #066E6E;
+      --sap-positive:      #188918;
+      --sap-critical:      #E76500;
+      --sap-negative:      #BB0000;
+      --sap-info:          #0070F2;
+      --bg-page:           #F5F6F7;
+      --bg-card:           #FFFFFF;
+      --text-primary:      #1D2D3E;
+      --text-secondary:    #556B82;
+      --text-on-dark:      #FFFFFF;
+      --border:            #D1D5DA;
+      --shadow-card:       0 2px 8px rgba(0,0,0,.10), 0 0 2px rgba(0,0,0,.06);
+      --shadow-hover:      0 6px 20px rgba(0,0,0,.14), 0 1px 4px rgba(0,0,0,.08);
+      --radius:            12px;
+      --radius-sm:         8px;
+    }
+
+    /* ── Reset & base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "72", "72full", -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--text-primary);
+      background: var(--bg-page);
+    }
+    a { color: var(--sap-blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    img { max-width: 100%; }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(7,7,79,.96);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 52px;
+      box-shadow: 0 1px 0 rgba(255,255,255,.08);
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .nav-brand .sap-logo {
+      display: flex;
+      align-items: center;
+      height: 24px;
+    }
+    .nav-brand .sap-logo img {
+      height: 24px;
+      width: auto;
+      display: block;
+      filter: brightness(0) invert(1);   /* renders the logo in white on dark nav */
+    }
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: rgba(255,255,255,.75);
+      font-size: 13px;
+      font-weight: 500;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: #fff; text-decoration: none; }
+
+    /* ── Section wrappers ── */
+    section { padding: 80px 48px; }
+    .container { max-width: 1180px; margin: 0 auto; }
+    .section-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--sap-blue);
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: clamp(28px, 3vw, 42px);
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.25;
+      margin-bottom: 16px;
+    }
+    .section-subtitle {
+      font-size: 17px;
+      color: var(--text-secondary);
+      max-width: 680px;
+      margin-bottom: 48px;
+      line-height: 1.65;
+    }
+
+    /* ── Hero ── */
+    #hero {
+      background: linear-gradient(135deg, var(--sap-navy) 0%, #0D1B7A 55%, #0F4C9A 100%);
+      color: #fff;
+      padding: 100px 48px 90px;
+      position: relative;
+      overflow: hidden;
+    }
+    #hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ccircle cx='30' cy='30' r='1.5' fill='%230FAAFF' fill-opacity='.25'/%3E%3C/svg%3E") repeat;
+      pointer-events: none;
+    }
+    #hero .container { position: relative; }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(15,170,255,.15);
+      border: 1px solid rgba(15,170,255,.3);
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--sap-accent);
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    #hero h1 {
+      font-size: clamp(36px, 5vw, 64px);
+      font-weight: 700;
+      line-height: 1.15;
+      max-width: 820px;
+      margin-bottom: 24px;
+    }
+    #hero h1 span { color: var(--sap-accent); }
+    .hero-desc {
+      font-size: 18px;
+      color: rgba(255,255,255,.80);
+      max-width: 640px;
+      margin-bottom: 48px;
+      line-height: 1.7;
+    }
+    .hero-meta {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+    .hero-meta-item { display: flex; flex-direction: column; gap: 2px; }
+    .hero-meta-item .label { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,.5); }
+    .hero-meta-item .value { font-size: 15px; font-weight: 600; color: rgba(255,255,255,.9); }
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-top: 64px;
+    }
+    .hero-stat {
+      background: rgba(255,255,255,.06);
+      padding: 28px 24px;
+      text-align: center;
+    }
+    .hero-stat .number {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--sap-accent);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .hero-stat .caption { font-size: 13px; color: rgba(255,255,255,.65); }
+
+    /* ── Executive Summary ── */
+    #executive { background: #fff; }
+    .exec-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .exec-card {
+      border-radius: var(--radius);
+      padding: 32px 28px;
+      box-shadow: var(--shadow-card);
+      transition: box-shadow .2s, transform .2s;
+      border-top: 3px solid transparent;
+    }
+    .exec-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+    .exec-card.insights  { border-top-color: var(--sap-blue); }
+    .exec-card.rec       { border-top-color: var(--sap-positive); }
+    .exec-card.metrics   { border-top-color: var(--sap-critical); }
+    .exec-card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-bottom: 16px;
+    }
+    .insights  .exec-card-icon { background: #E8F2FF; }
+    .rec       .exec-card-icon { background: #E8F5E9; }
+    .metrics   .exec-card-icon { background: #FFF3E0; }
+    .exec-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+    }
+    .exec-card ol {
+      padding-left: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .exec-card li { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+    /* ── Context / What is Project Billing ── */
+    #context { background: var(--bg-page); }
+    .process-flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 56px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+    .process-step {
+      flex: 1;
+      min-width: 140px;
+      background: var(--sap-blue);
+      color: #fff;
+      text-align: center;
+      padding: 18px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      position: relative;
+    }
+    .process-step:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      right: -16px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 18px solid transparent;
+      border-left: 16px solid var(--sap-blue);
+      z-index: 2;
+    }
+    .process-step:not(:first-child) { margin-left: 0; }
+    .process-step.input { background: #4CA3FF; }
+    .process-step.input::after { border-left-color: #4CA3FF; }
+    .persona-card {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 32px;
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 36px;
+      box-shadow: var(--shadow-card);
+      align-items: start;
+    }
+    .persona-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--sap-blue), var(--sap-accent));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      flex-shrink: 0;
+    }
+    .persona-info h3 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .persona-info .role { font-size: 14px; color: var(--sap-blue); font-weight: 600; margin-bottom: 16px; }
+    .persona-grids {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 16px;
+    }
+    .persona-grids div h4 { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+    .persona-grids div ul { padding-left: 16px; }
+    .persona-grids div li { font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
+
+    /* ── Pain Points ── */
+    #pain { background: var(--sap-navy); }
+    #pain .section-title { color: #fff; }
+    #pain .section-subtitle { color: rgba(255,255,255,.65); }
+    #pain .section-label { color: var(--sap-accent); }
+    .pain-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .pain-card {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      transition: background .2s, transform .2s;
+    }
+    .pain-card:hover { background: rgba(255,255,255,.10); transform: translateY(-2px); }
+    .pain-card h3 { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 12px; }
+    .pain-card p { font-size: 13px; color: rgba(255,255,255,.65); line-height: 1.65; }
+    .pain-card em { color: var(--sap-accent); font-style: normal; font-weight: 600; }
+    .pain-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: rgba(15,170,255,.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      margin-bottom: 14px;
+    }
+
+    /* ── Research / HCD ── */
+    #research { background: var(--bg-page); }
+    .hcd-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    .hcd-card {
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 24px 20px;
+      box-shadow: var(--shadow-card);
+      border-top: 3px solid var(--sap-blue);
+    }
+    .hcd-step {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--sap-blue);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+    .hcd-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--text-primary); }
+    .hcd-card ul { padding-left: 16px; }
+    .hcd-card li { font-size: 12px; color: var(--text-secondary); margin-bottom: 5px; line-height: 1.5; }
+
+    /* ── Concept / Joule ── */
+    #concept { background: #fff; }
+    .concept-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 56px;
+      align-items: center;
+    }
+    .joule-mockup {
+      background: var(--bg-page);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+    }
+    .joule-header {
+      background: var(--sap-navy);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .joule-header .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .joule-header .dot.red { background: #FF5F57; }
+    .joule-header .dot.yellow { background: #FFBD2E; }
+    .joule-header .dot.green { background: #28CA41; }
+    .joule-header span { color: rgba(255,255,255,.5); font-size: 12px; margin-left: 8px; }
+    .joule-body { padding: 20px; }
+    .joule-topbar {
+      background: #fff;
+      border-radius: 8px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    }
+    .joule-topbar .breadcrumb { font-size: 12px; color: var(--text-secondary); }
+    .joule-topbar .actions { display: flex; gap: 8px; }
+    .btn-joule {
+      background: var(--sap-blue);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 5px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: default;
+    }
+    .btn-outline { background: transparent; border: 1px solid var(--sap-blue); color: var(--sap-blue); border-radius: 6px; padding: 5px 12px; font-size: 11px; font-weight: 600; }
+    .situation-card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    }
+    .situation-card .priority-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--sap-negative);
+      background: #FFECEC;
+      border-radius: 4px;
+      padding: 2px 8px;
+      margin-bottom: 8px;
+    }
+    .situation-card .title { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+    .situation-card .meta { font-size: 12px; color: var(--text-secondary); margin-bottom: 3px; }
+    .situation-card .btns { display: flex; gap: 8px; margin-top: 14px; }
+    .concept-content h2 { font-size: 32px; font-weight: 700; margin-bottom: 16px; line-height: 1.3; }
+    .concept-content p { font-size: 15px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 20px; }
+    .feature-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .feature-list li .check {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--sap-blue);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ── Evaluation ── */
+    #evaluation { background: var(--bg-page); }
+    .eval-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+    .eval-card {
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      box-shadow: var(--shadow-card);
+    }
+    .eval-card h3 { font-size: 14px; font-weight: 700; color: var(--text-secondary); margin-bottom: 20px; text-transform: uppercase; letter-spacing: .5px; }
+
+    /* Chart bars */
+    .bar-group { display: flex; flex-direction: column; gap: 10px; }
+    .bar-row { display: grid; grid-template-columns: 110px 1fr auto; align-items: center; gap: 10px; }
+    .bar-label { font-size: 12px; color: var(--text-secondary); }
+    .bar-track {
+      height: 12px;
+      background: #F0F0F0;
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      transition: width .6s ease;
+    }
+    .bar-fill.current  { background: var(--sap-critical); }
+    .bar-fill.joule    { background: var(--sap-blue); }
+    .bar-val { font-size: 12px; font-weight: 700; color: var(--text-primary); width: 32px; text-align: right; }
+
+    /* Legend */
+    .chart-legend {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 16px;
+    }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
+    .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+    .legend-dot.current  { background: var(--sap-critical); }
+    .legend-dot.joule    { background: var(--sap-blue); }
+
+    /* Satisfaction scores */
+    .score-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .score-item { text-align: center; }
+    .score-item .score-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; }
+    .score-pair { display: flex; justify-content: center; gap: 8px; align-items: flex-end; }
+    .score-bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .score-bar {
+      width: 28px;
+      border-radius: 4px 4px 0 0;
+      transition: height .6s ease;
+    }
+    .score-bar.current { background: var(--sap-critical); }
+    .score-bar.joule   { background: var(--sap-blue); }
+    .score-bar-num { font-size: 11px; font-weight: 700; color: var(--text-primary); }
+    .score-bar-tag { font-size: 10px; color: var(--text-secondary); }
+
+    /* Business sentiment */
+    .sentiment-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .sentiment-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .sentiment-item .q { font-size: 12px; color: var(--text-secondary); line-height: 1.4; }
+    .sentiment-item .score-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .sentiment-track {
+      flex: 1;
+      height: 8px;
+      background: #F0F0F0;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .sentiment-fill {
+      height: 100%;
+      background: var(--sap-blue);
+      border-radius: 4px;
+    }
+    .sentiment-score { font-size: 14px; font-weight: 700; color: var(--sap-blue); white-space: nowrap; }
+
+    /* ── Hypotheses ── */
+    #hypotheses { background: #fff; }
+    .hyp-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .hyp-card {
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      border: 1px solid var(--border);
+    }
+    .hyp-card .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+    }
+    .hyp-card.partial .tag { background: #FFF3E0; color: var(--sap-critical); }
+    .hyp-card.supported .tag { background: #E8F5E9; color: var(--sap-positive); }
+    .hyp-card h3 { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 10px; }
+    .hyp-card p { font-size: 13px; color: var(--text-secondary); line-height: 1.65; }
+
+    /* ── Key Findings ── */
+    #findings { background: var(--bg-page); }
+    .finding-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .finding-card {
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      gap: 16px;
+    }
+    .finding-num {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--sap-blue);
+      line-height: 1;
+      flex-shrink: 0;
+      font-variant-numeric: tabular-nums;
+      min-width: 32px;
+    }
+    .finding-card h3 { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+    .finding-card p { font-size: 13px; color: var(--text-secondary); line-height: 1.65; }
+
+    /* ── Synthesis ── */
+    #synthesis { background: var(--sap-navy); }
+    #synthesis .section-title { color: #fff; }
+    #synthesis .section-label { color: var(--sap-accent); }
+    .synthesis-final {
+      background: rgba(15,170,255,.12);
+      border: 1px solid rgba(15,170,255,.25);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      margin-top: 40px;
+      font-size: 17px;
+      color: #fff;
+      line-height: 1.7;
+    }
+    .synthesis-final strong { color: var(--sap-accent); }
+    .synthesis-rows { display: flex; flex-direction: column; gap: 16px; }
+    .synth-row {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .synth-arrow {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: rgba(255,255,255,.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .synth-row .text { font-size: 14px; color: rgba(255,255,255,.75); line-height: 1.65; }
+    .synth-row .text strong { color: #fff; }
+    .synth-row .text em { color: var(--sap-accent); font-style: normal; }
+
+    /* ── Limitations ── */
+    #limitations { background: var(--bg-page); }
+    .limit-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .limit-item {
+      background: #fff;
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .limit-item .icon { font-size: 18px; flex-shrink: 0; }
+    .limit-item h4 { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+    .limit-item p { font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
+
+    /* ── Future Scope ── */
+    #future { background: #fff; }
+    .future-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .future-card {
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      background: var(--bg-page);
+      border-left: 3px solid var(--sap-blue);
+      transition: background .2s;
+    }
+    .future-card:hover { background: #E8F2FF; }
+    .future-card h3 { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 12px; }
+    .future-card ul { padding-left: 16px; }
+    .future-card li { font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; line-height: 1.55; }
+
+    /* ── PSA Impact ── */
+    #psa-impact { background: var(--bg-page); }
+    .psa-intro-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 56px;
+    }
+    .psa-intro-card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 24px 20px;
+      box-shadow: var(--shadow-card);
+      border-top: 3px solid var(--sap-blue);
+      transition: box-shadow .2s, transform .2s;
+    }
+    .psa-intro-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+    .psa-intro-icon {
+      font-size: 26px;
+      margin-bottom: 12px;
+      display: block;
+    }
+    .psa-intro-card h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+    .psa-impact-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 20px;
+    }
+    .psa-impact-card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 28px 22px;
+      box-shadow: var(--shadow-card);
+      transition: box-shadow .2s, transform .2s;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .psa-impact-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+    .psa-impact-num {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--sap-blue);
+      background: #E8F2FF;
+      border-radius: 20px;
+      padding: 3px 10px;
+      width: fit-content;
+    }
+    .psa-impact-card h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+    .psa-impact-card p {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      flex: 1;
+    }
+    .psa-impact-tag {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--sap-positive);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .psa-impact-tag::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--sap-positive);
+      flex-shrink: 0;
+    }
+
+    /* ── Conclusion ── */
+    #conclusion {
+      background: linear-gradient(135deg, var(--sap-navy) 0%, #0D1B7A 55%, #0F4C9A 100%);
+      color: #fff;
+      text-align: center;
+      padding: 96px 48px;
+    }
+    #conclusion .section-label { color: var(--sap-accent); }
+    #conclusion .section-title { color: #fff; }
+    .conclusion-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 56px;
+      text-align: left;
+    }
+    .concl-card {
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+    }
+    .concl-card .label { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px; }
+    .concl-card.improved .label { color: #6DD5A3; }
+    .concl-card.remains  .label { color: #FFBD66; }
+    .concl-card.insight  .label { color: var(--sap-accent); }
+    .concl-card ul { padding-left: 16px; }
+    .concl-card li { font-size: 14px; color: rgba(255,255,255,.75); margin-bottom: 8px; line-height: 1.55; }
+    .final-insight {
+      margin-top: 56px;
+      background: rgba(15,170,255,.12);
+      border: 1px solid rgba(15,170,255,.25);
+      border-radius: var(--radius);
+      padding: 32px 40px;
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 1.6;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .final-insight strong { color: var(--sap-accent); }
+
+    /* ── Footer ── */
+    footer {
+      background: #0A0A2E;
+      color: rgba(255,255,255,.45);
+      text-align: center;
+      padding: 32px 48px;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    footer strong { color: rgba(255,255,255,.75); }
+
+    /* ── Divider ── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0 48px;
+    }
+
+    /* ── Utility ── */
+    .text-blue { color: var(--sap-blue); }
+    .text-accent { color: var(--sap-accent); }
+    .mt-8 { margin-top: 8px; }
+    .mt-16 { margin-top: 16px; }
+
+    /* ── Responsive ── */
+    @media (max-width: 960px) {
+      nav { padding: 0 24px; }
+      section { padding: 60px 24px; }
+      .hero-stats { grid-template-columns: repeat(2, 1fr); }
+      .exec-grid, .pain-grid, .hcd-grid, .hyp-grid, .finding-grid,
+      .future-grid, .conclusion-cards, .eval-grid, .limit-grid { grid-template-columns: 1fr 1fr; }
+      .concept-wrap { grid-template-columns: 1fr; }
+      .persona-grids { grid-template-columns: 1fr 1fr; }
+      .nav-links { display: none; }
+    }
+    @media (max-width: 600px) {
+      section { padding: 48px 20px; }
+      .exec-grid, .pain-grid, .hcd-grid, .hyp-grid, .finding-grid,
+      .future-grid, .conclusion-cards, .eval-grid, .limit-grid { grid-template-columns: 1fr; }
+      .hero-stats { grid-template-columns: repeat(2, 1fr); }
+      .persona-card { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ────────────────── NAV ────────────────── -->
+<nav>
+  <div class="nav-brand">
+    <span class="sap-logo">
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/5/59/SAP_2011_logo.svg"
+        alt="SAP"
+        onerror="this.style.display='none';this.nextElementSibling.style.display='inline-block';"
+      />
+      <!-- inline fallback if network unavailable -->
+      <svg style="display:none;" height="22" viewBox="0 0 66 22" xmlns="http://www.w3.org/2000/svg" aria-label="SAP">
+        <text x="0" y="18" font-family="Arial Black, Arial, sans-serif" font-size="22" font-weight="900" fill="white" letter-spacing="1">SAP</text>
+      </svg>
+    </span>
+    Master Thesis — Project Billing
+  </div>
+  <ul class="nav-links">
+    <li><a href="#context">Context</a></li>
+    <li><a href="#pain">Pain Points</a></li>
+    <li><a href="#concept">Concept</a></li>
+    <li><a href="#demo">Demo</a></li>
+    <li><a href="#evaluation">Results</a></li>
+    <li><a href="#findings">Key Findings</a></li>
+    <li><a href="#psa-impact">PSA Impact</a></li>
+    <li><a href="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
+
+<!-- ────────────────── DISCLAIMER STRIP ────────────────── -->
+<div style="
+  background: #FFF8E1;
+  border-bottom: 1px solid #FFE082;
+  padding: 8px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #5D4037;
+  text-align: center;
+  line-height: 1.5;
+">
+  <span style="font-size:15px;">⚠️</span>
+  <span>This page has been created using AI and is intended as a visual summary of the thesis work. To view the original content, please contact the owner.</span>
+</div>
+
+<!-- ────────────────── HERO ────────────────── -->
+<section id="hero">
+  <div class="container">
+    <div class="hero-badge">
+      ✦ &nbsp; Master Thesis &nbsp;·&nbsp; SAP × TH Ingolstadt
+    </div>
+    <h1>
+      Reactive to <span>Proactive</span><br/>Project Billing
+    </h1>
+    <p class="hero-desc">
+      Intelligent and Automated Billing Workflows in SAP S/4HANA Public Cloud for Professional Services Automation — using AI (SAP Joule) and a rule-based framework to shift billing specialists from reactive firefighting to proactive, guided decisions.
+    </p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="label">Researcher</span>
+        <span class="value">Ritvik Kolhe</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">Programme</span>
+        <span class="value">M.Sc. User Experience Design</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">Industry Partner</span>
+        <span class="value">SAP SE — Business Suite UX</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">Presentation Date</span>
+        <span class="value">June 2, 2026</span>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="number">7</div>
+        <div class="caption">Usability test participants</div>
+      </div>
+      <div class="hero-stat">
+        <div class="number">22</div>
+        <div class="caption">Customer Council responses</div>
+      </div>
+      <div class="hero-stat">
+        <div class="number">4.42</div>
+        <div class="caption">Value rating (avg, out of 5)</div>
+      </div>
+      <div class="hero-stat">
+        <div class="number">−5.7</div>
+        <div class="caption">NASA-TLX time-pressure drop</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────── EXECUTIVE SUMMARY ────────────────── -->
+<section id="executive">
+  <div class="container">
+    <p class="section-label">Executive Summary</p>
+    <h2 class="section-title">What We Found — and What to Do Next</h2>
+    <p class="section-subtitle">
+      A mixed-method study combining prototype testing, NASA-TLX, UEQ-S, and a Customer Council at SAP Berlin revealed three key clusters of insights, recommendations, and success metrics.
+    </p>
+    <div class="exec-grid">
+      <div class="exec-card insights">
+        <div class="exec-card-icon">💡</div>
+        <h3>Insights</h3>
+        <ol>
+          <li>Earlier issue detection and prioritization reduce searching and time pressure; usability improves, especially for non-experts.</li>
+          <li>Cognitive effort is not yet reduced — users double-check in the app, report lower "does what I need," and see the concept as an assistive layer today.</li>
+          <li>Trust and actionability limit adoption: missing billing summary, unclear actions, and need for precise deep links; price discrepancies are the top fix.</li>
+        </ol>
+      </div>
+      <div class="exec-card rec">
+        <div class="exec-card-icon">✅</div>
+        <h3>Recommendations</h3>
+        <ol>
+          <li>Add a pre-submit Billing Summary (totals, per-element rollups, expected invoice grouping).</li>
+          <li>Make actions explicit and traceable (email preview/recipients/status; show "notified" vs "resolved") and place actions on the card.</li>
+          <li>Enable end-to-end resolution for frequent issues (or one-click deep links to the exact item with return and status sync); clarify entry points.</li>
+        </ol>
+      </div>
+      <div class="exec-card metrics">
+        <div class="exec-card-icon">📊</div>
+        <h3>Next-Iteration Metrics</h3>
+        <ol>
+          <li>Median time to identify and resolve top billing risks (current vs. prototype).</li>
+          <li>Billing preparation tasks completed without opening the app (in-Joule completion rate).</li>
+          <li>Perceived complexity/trust to submit (NASA-TLX Mental Demand + self-reported "trust to submit without verification").</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────── CONTEXT ────────────────── -->
+<section id="context">
+  <div class="container">
+    <p class="section-label">Context</p>
+    <h2 class="section-title">What Is Project Billing?</h2>
+    <p class="section-subtitle">
+      Project Billing in Professional Services converts project-related work — time, expenses, and services — into invoices. It is the revenue engine for consulting organisations using SAP S/4HANA Cloud.
+    </p>
+
+    <!-- Process flow -->
+    <div class="process-flow">
+      <div class="process-step input">Time Recording</div>
+      <div class="process-step input">Expense Recording</div>
+      <div class="process-step">Data Reviewed &amp; Adjusted</div>
+      <div class="process-step">Billing Request Created</div>
+      <div class="process-step">Invoice Generated &amp; Sent</div>
+    </div>
+
+    <!-- Persona -->
+    <div class="persona-card">
+      <div class="persona-avatar">👨‍💼</div>
+      <div class="persona-info">
+        <h3>Bill Now, 30 — Billing Specialist</h3>
+        <div class="role">Primary Persona &nbsp;·&nbsp; SAP S/4HANA Public Cloud</div>
+        <blockquote style="font-size:15px;font-style:italic;color:var(--text-secondary);border-left:3px solid var(--sap-blue);padding-left:14px;margin-bottom:16px;">
+          "My job is to bill as much as possible accurately, timely regarding the project situation."
+        </blockquote>
+        <div class="persona-grids">
+          <div>
+            <h4>Main Goals</h4>
+            <ul>
+              <li>Bill correctly and on time</li>
+              <li>Maximise revenue and cash flow</li>
+              <li>Avoid rework and invoice rejection</li>
+            </ul>
+          </div>
+          <div>
+            <h4>Needs</h4>
+            <ul>
+              <li>One place for all billing info</li>
+              <li>Early detection of risks and issues</li>
+              <li>Clear guidance on what to fix</li>
+              <li>Faster, more confident decisions</li>
+            </ul>
+          </div>
+          <div>
+            <h4>Pain Points</h4>
+            <ul>
+              <li>Issues found too late in the process</li>
+              <li>Manual checks across multiple systems</li>
+              <li>High rework due to rejected invoices</li>
+              <li>Lack of clear overview and guidance</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────── STORYBOARD ────────────────── -->
+<section id="storyboard" style="background:#0d0d1f; padding:45px 0 36px;">
+  <style>
+    /* ── Storyboard scoped styles ── */
+    #storyboard .sb-page-header { text-align:center; margin-bottom:20px; }
+    #storyboard .sb-page-title {
+      font-family:'Bangers','Arial Black',sans-serif;
+      font-size:1.5rem; color:#fff; letter-spacing:4px;
+      text-shadow:3px 3px 0 #2a6dd9,6px 6px 0 #0a2a5a;
+      margin-bottom:4px;
+    }
+    #storyboard .sb-page-subtitle {
+      color:#7a90b0; font-size:.7rem; letter-spacing:2px; text-transform:uppercase;
+    }
+    #storyboard .sb-filmstrip {
+      background:#1a1a1a; border-radius:10px;
+      padding:10px 16px 14px;
+      box-shadow:0 20px 60px rgba(0,0,0,.7);
+      margin:0 48px;
+      transform:scale(0.75);
+      transform-origin:top center;
+    }
+    #storyboard .sb-perf-row { display:flex; justify-content:space-around; padding:3px 0; }
+    #storyboard .sb-perf { width:18px; height:10px; background:#0d0d1f; border-radius:3px; }
+    #storyboard .sb-frames-grid {
+      display:grid; grid-template-columns:repeat(3,1fr);
+      gap:12px; padding:8px 0;
+    }
+    #storyboard .sb-film-frame {
+      background:white; border-radius:6px; overflow:hidden;
+      box-shadow:0 4px 20px rgba(0,0,0,.5);
+      transition:transform .25s ease,box-shadow .25s ease;
+      cursor:default; display:flex; flex-direction:column;
+    }
+    #storyboard .sb-film-frame:hover { transform:translateY(-3px) scale(1.015); box-shadow:0 12px 36px rgba(0,0,0,.7); }
+    #storyboard .sb-frame-num {
+      background:#1a1a1a; color:#ffaa33;
+      font-family:'Bangers',monospace; font-size:.7rem;
+      letter-spacing:3px; text-align:center; padding:4px;
+    }
+    #storyboard .sb-frame-title-bar {
+      font-size:.62rem; font-weight:700; text-align:center;
+      padding:5px 10px; text-transform:uppercase; letter-spacing:.5px; line-height:1.2;
+    }
+    #storyboard .sb-f1 .sb-frame-title-bar { background:#fff8e1; color:#c45100; }
+    #storyboard .sb-f2 .sb-frame-title-bar { background:#e8f5e9; color:#2e6b32; }
+    #storyboard .sb-f3 .sb-frame-title-bar { background:#f3e5f5; color:#6a1b9a; }
+    #storyboard .sb-f4 .sb-frame-title-bar { background:#fff3e0; color:#bf360c; }
+    #storyboard .sb-f5 .sb-frame-title-bar { background:#fce4ec; color:#880e4f; }
+    #storyboard .sb-f6 .sb-frame-title-bar { background:#e3f2fd; color:#0d47a1; }
+    #storyboard .sb-scene-wrap { position:relative; overflow:hidden; }
+    #storyboard .sb-scene-wrap svg { display:block; width:100%; height:auto; }
+    #storyboard .sb-frame-caption {
+      padding:6px 10px 8px; font-size:.6rem; line-height:1.5;
+      color:#2a2a2a; background:#f7f7f7; border-top:1px solid #e8e8e8;
+    }
+    #storyboard .sb-emo-tag {
+      display:inline-block; background:#222; color:#fff;
+      font-size:.55rem; font-weight:700; letter-spacing:.5px;
+      padding:2px 8px; border-radius:20px; margin-top:3px;
+    }
+    #storyboard .sb-arc-section { padding:6px 0 2px; }
+    #storyboard .sb-arc-label {
+      text-align:center; color:#666; font-size:.62rem;
+      letter-spacing:1.5px; text-transform:uppercase; padding-bottom:6px;
+    }
+
+    /* Reuse the same keyframes (only define if not already present) */
+    @keyframes sb-breathe  { 0%,100%{transform:scale(1)}   50%{transform:scale(1.04)} }
+    @keyframes sb-float    { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-9px)} }
+    @keyframes sb-floatB   { 0%,100%{transform:translateY(-4px)} 50%{transform:translateY(4px)} }
+    @keyframes sb-pulse    { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.65;transform:scale(1.12)} }
+    @keyframes sb-shake    { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-4px)rotate(-2deg)} 40%{transform:translateX(4px)rotate(2deg)} 60%{transform:translateX(-3px)rotate(-1deg)} 80%{transform:translateX(3px)rotate(1deg)} }
+    @keyframes sb-wobble   { 0%,100%{transform:translateY(0)rotate(0)} 30%{transform:translateY(-3px)rotate(-5deg)} 70%{transform:translateY(-1px)rotate(4deg)} }
+    @keyframes sb-stampDrop{ 0%{transform:translateY(-35px)rotate(-8deg)} 60%{transform:translateY(4px)rotate(-8deg)} 80%{transform:translateY(-4px)rotate(-8deg)} 100%{transform:translateY(0)rotate(-8deg)} }
+    @keyframes sb-arrowSlide{0%,100%{transform:translateX(0)} 50%{transform:translateX(10px)} }
+  </style>
+
+  <div class="container">
+    <div class="sb-page-header">
+      <p class="section-label" style="color:var(--sap-accent);">Current State</p>
+      <div class="sb-page-title">THE BILLING ODYSSEY</div>
+      <div class="sb-page-subtitle">Storyboard · SAP S/4HANA Public Cloud · Professional Services Billing · Current State</div>
+    </div>
+  </div>
+
+  <div class="sb-filmstrip">
+    <div class="sb-perf-row" id="sb-pr-top"></div>
+
+    <div class="sb-frames-grid">
+
+      <!-- FRAME 1 -->
+      <div class="sb-film-frame sb-f1">
+        <div class="sb-frame-num">FRAME 01</div>
+        <div class="sb-frame-title-bar">Project Setup &amp; Data Capture</div>
+        <div class="sb-scene-wrap">
+          <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="sb-g1bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fffde7"/><stop offset="100%" stop-color="#ffe0b2"/></linearGradient>
+              <linearGradient id="sb-g1desk" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#a0522d"/><stop offset="100%" stop-color="#6d3b1f"/></linearGradient>
+            </defs>
+            <rect width="400" height="300" fill="url(#sb-g1bg)"/>
+            <rect x="295" y="25" width="85" height="105" fill="#b3e0f7" rx="4" opacity=".7"/>
+            <rect x="295" y="25" width="85" height="105" fill="none" stroke="#aaa" stroke-width="2.5" rx="4"/>
+            <line x1="337" y1="25" x2="337" y2="130" stroke="#aaa" stroke-width="1.5"/>
+            <line x1="295" y1="77" x2="380" y2="77" stroke="#aaa" stroke-width="1.5"/>
+            <circle cx="358" cy="52" r="17" fill="#ffd600" opacity=".85"><animate attributeName="r" values="17;19.5;17" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values=".85;1;.85" dur="3s" repeatCount="indefinite"/></circle>
+            <g stroke="#ffd600" stroke-width="1.5" opacity=".6"><line x1="358" y1="30" x2="358" y2="24"/><line x1="375" y1="52" x2="381" y2="52"/><line x1="341" y1="52" x2="335" y2="52"/><line x1="369" y1="41" x2="374" y2="36"/><line x1="347" y1="41" x2="342" y2="36"/></g>
+            <rect x="30" y="200" width="340" height="18" fill="url(#sb-g1desk)" rx="3"/>
+            <rect x="55" y="218" width="18" height="55" fill="#6d3b1f"/>
+            <rect x="327" y="218" width="18" height="55" fill="#6d3b1f"/>
+            <rect x="152" y="152" width="116" height="52" fill="#2d2d2d" rx="5"/>
+            <rect x="157" y="156" width="106" height="44" fill="#1565c0" rx="3"/>
+            <rect x="162" y="162" width="55" height="4" fill="white" rx="1" opacity=".8"/>
+            <rect x="162" y="170" width="38" height="3" fill="#69f0ae" rx="1" opacity=".8"><animate attributeName="width" values="38;52;38" dur="1.8s" repeatCount="indefinite"/></rect>
+            <rect x="162" y="177" width="46" height="3" fill="#69f0ae" rx="1" opacity=".7"/>
+            <rect x="162" y="184" width="30" height="3" fill="white" rx="1" opacity=".6"/>
+            <rect x="194" y="184" width="2" height="10" fill="white"><animate attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite"/></rect>
+            <rect x="136" y="201" width="148" height="8" fill="#444" rx="2"/>
+            <g><rect x="65" y="143" width="65" height="80" fill="white" stroke="#ddd" stroke-width="1" rx="2" transform="rotate(-7,97,183)"/><rect x="71" y="153" width="42" height="3" fill="#333" rx="1" transform="rotate(-7,92,154)"/><rect x="71" y="160" width="36" height="2" fill="#999" rx="1" transform="rotate(-7,89,161)"/><rect x="71" y="166" width="40" height="2" fill="#999" rx="1" transform="rotate(-7,91,167)"/><rect x="71" y="172" width="30" height="2" fill="#999" rx="1" transform="rotate(-7,86,173)"/><text x="74" y="195" font-size="9" fill="#1565c0" font-weight="bold" transform="rotate(-7,90,193)">SOW</text></g>
+            <g style="animation:sb-breathe 3s ease-in-out infinite"><ellipse cx="115" cy="185" rx="26" ry="36" fill="#7c3aed"/><circle cx="115" cy="146" r="29" fill="#ffcc80"/><ellipse cx="115" cy="123" rx="29" ry="13" fill="#4a2200"/><circle cx="107" cy="145" r="4.5" fill="white"/><circle cx="123" cy="145" r="4.5" fill="white"/><circle cx="108" cy="146" r="2.8" fill="#222"/><circle cx="124" cy="146" r="2.8" fill="#222"/><path d="M107 156 Q115 162 123 156" stroke="#333" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="115" cy="181" r="15" fill="#7c3aed" stroke="white" stroke-width="1.5"/><text x="115" y="186" font-size="9.5" fill="white" text-anchor="middle" font-weight="bold">PM</text><line x1="136" y1="180" x2="162" y2="168" stroke="#7c3aed" stroke-width="9" stroke-linecap="round"/></g>
+            <g style="animation:sb-breathe 3.6s ease-in-out infinite"><ellipse cx="282" cy="185" rx="24" ry="32" fill="#e67e22"/><circle cx="282" cy="150" r="26" fill="#ffcc80"/><ellipse cx="282" cy="129" rx="26" ry="11" fill="#1a1a1a"/><circle cx="274" cy="149" r="4" fill="white"/><circle cx="290" cy="149" r="4" fill="white"/><circle cx="275" cy="150" r="2.5" fill="#222"/><circle cx="291" cy="150" r="2.5" fill="#222"/><path d="M274 159 Q282 164 290 159" stroke="#333" stroke-width="1.5" fill="none" stroke-linecap="round"/><circle cx="282" cy="181" r="14" fill="#e67e22" stroke="white" stroke-width="1.5"/><text x="282" y="186" font-size="7.5" fill="white" text-anchor="middle" font-weight="bold">C/TM</text><line x1="262" y1="178" x2="240" y2="190" stroke="#e67e22" stroke-width="8" stroke-linecap="round"/></g>
+            <g style="animation:sb-float 2.8s ease-in-out infinite"><circle cx="200" cy="68" r="20" fill="#4caf50" opacity=".9"/><text x="200" y="75" font-size="17" text-anchor="middle">✓</text></g>
+            <text x="200" y="287" font-size="10.5" fill="#666" text-anchor="middle" font-style="italic" font-family="Georgia,serif">Project team aligns on structure &amp; starts recording time</text>
+          </svg>
+        </div>
+        <div class="sb-frame-caption">
+          The <strong>Project Manager</strong> creates the project structure aligned with the contract/SOW. <strong>Consultants</strong> record time and expenses — everything feels smooth and transactional.
+          <br><span class="sb-emo-tag">😊 Confident &amp; Transactional</span>
+        </div>
+      </div>
+
+      <!-- FRAME 2 -->
+      <div class="sb-film-frame sb-f2">
+        <div class="sb-frame-num">FRAME 02</div>
+        <div class="sb-frame-title-bar">Ready for Billing — The Overwhelm</div>
+        <div class="sb-scene-wrap">
+          <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+            <defs><linearGradient id="sb-g2bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e8f5e9"/><stop offset="100%" stop-color="#c8e6c9"/></linearGradient></defs>
+            <rect width="400" height="300" fill="url(#sb-g2bg)"/>
+            <rect x="20" y="206" width="360" height="16" fill="#8d6e63" rx="2"/>
+            <g style="animation:sb-floatB 3s ease-in-out infinite"><rect x="28" y="130" width="62" height="78" fill="white" stroke="#ddd" stroke-width="1" rx="2" transform="rotate(-11,59,169)"/><rect x="33" y="140" width="38" height="2.5" fill="#888" rx="1" transform="rotate(-11,52,141)"/><rect x="33" y="147" width="30" height="2" fill="#bbb" rx="1" transform="rotate(-11,48,148)"/><rect x="33" y="153" width="34" height="2" fill="#bbb" rx="1" transform="rotate(-11,50,154)"/><rect x="33" y="159" width="25" height="2" fill="#bbb" rx="1" transform="rotate(-11,45,160)"/></g>
+            <g style="animation:sb-floatB 2.5s ease-in-out infinite;animation-delay:.8s"><rect x="300" y="138" width="60" height="72" fill="white" stroke="#ddd" stroke-width="1" rx="2" transform="rotate(9,330,174)"/><rect x="306" y="148" width="36" height="2.5" fill="#888" rx="1" transform="rotate(9,324,149)"/><rect x="306" y="155" width="28" height="2" fill="#bbb" rx="1" transform="rotate(9,320,156)"/><rect x="306" y="161" width="32" height="2" fill="#bbb" rx="1" transform="rotate(9,322,162)"/></g>
+            <rect x="144" y="110" width="132" height="98" fill="#1a237e" rx="6"/>
+            <rect x="149" y="115" width="122" height="88" fill="#283593" rx="4"/>
+            <rect x="154" y="121" width="78" height="6" fill="#8c9eff" rx="2"/>
+            <rect x="154" y="132" width="100" height="3.5" fill="#5c6bc0" rx="1"/>
+            <rect x="154" y="139" width="90" height="3.5" fill="#5c6bc0" rx="1"/>
+            <rect x="154" y="146" width="96" height="3.5" fill="#5c6bc0" rx="1"/>
+            <rect x="154" y="153" width="84" height="3.5" fill="#ff5252" rx="1"><animate attributeName="opacity" values="1;.3;1" dur="1.2s" repeatCount="indefinite"/></rect>
+            <rect x="154" y="160" width="102" height="3.5" fill="#5c6bc0" rx="1"/>
+            <rect x="154" y="167" width="76" height="3.5" fill="#ff5252" rx="1"><animate attributeName="opacity" values="1;.3;1" dur="1.4s" repeatCount="indefinite"/></rect>
+            <rect x="154" y="174" width="88" height="3.5" fill="#5c6bc0" rx="1"/>
+            <rect x="192" y="208" width="36" height="8" fill="#555"/>
+            <rect x="178" y="216" width="64" height="5" fill="#666" rx="2"/>
+            <g style="animation:sb-wobble 1.8s ease-in-out infinite"><ellipse cx="200" cy="188" rx="27" ry="36" fill="#1565c0"/><circle cx="200" cy="147" r="30" fill="#ffb74d"/><ellipse cx="200" cy="123" rx="30" ry="14" fill="#4a2200"/><circle cx="190" cy="145" r="6" fill="white"/><circle cx="210" cy="145" r="6" fill="white"/><circle cx="191" cy="146" r="3.8" fill="#222"/><circle cx="211" cy="146" r="3.8" fill="#222"/><path d="M183 134 Q190 129 197 134" stroke="#4a2200" stroke-width="2.5" fill="none"/><path d="M203 134 Q210 129 217 134" stroke="#4a2200" stroke-width="2.5" fill="none"/><ellipse cx="200" cy="158" rx="7" ry="6" fill="#222"/><ellipse cx="200" cy="158" rx="5" ry="4" fill="#b71c1c"/><circle cx="200" cy="183" r="15" fill="#1565c0" stroke="white" stroke-width="1.5"/><text x="200" y="188" font-size="10" fill="white" text-anchor="middle" font-weight="bold">BS</text><line x1="173" y1="177" x2="147" y2="157" stroke="#1565c0" stroke-width="9" stroke-linecap="round"/><line x1="227" y1="177" x2="253" y2="157" stroke="#1565c0" stroke-width="9" stroke-linecap="round"/></g>
+            <text x="75" y="102" font-size="30" fill="#ff7043" opacity=".85" style="animation:sb-float 2.2s ease-in-out infinite">?</text>
+            <text x="305" y="92" font-size="24" fill="#ffa726" opacity=".8" style="animation:sb-float 2.7s ease-in-out infinite;animation-delay:.6s">?</text>
+            <text x="50" y="195" font-size="20" fill="#ef5350" opacity=".7" style="animation:sb-float 3s ease-in-out infinite;animation-delay:1.1s">?</text>
+            <g style="animation:sb-pulse .9s ease-in-out infinite"><circle cx="352" cy="78" r="20" fill="#f44336"/><text x="352" y="85" font-size="20" fill="white" text-anchor="middle" font-weight="bold">!</text></g>
+            <g style="animation:sb-float 2s ease-in-out infinite;animation-delay:.5s"><rect x="22" y="52" width="115" height="30" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5" rx="5"/><text x="80" y="64" font-size="7.5" fill="#e65100" text-anchor="middle" font-weight="bold">No Billing Overview!</text><text x="80" y="76" font-size="7" fill="#666" text-anchor="middle">Manual checks, scattered data</text></g>
+            <text x="200" y="287" font-size="10.5" fill="#555" text-anchor="middle" font-style="italic" font-family="Georgia,serif">No overview. Scattered data. High workload. No prioritisation.</text>
+          </svg>
+        </div>
+        <div class="sb-frame-caption">
+          The <strong>Billing Specialist</strong> faces a flood of manual checks across scattered project data. No prioritisation tool, missing approvals, unclear workflow — and no way to tell which projects are urgent.
+          <br><span class="sb-emo-tag">😮 Overwhelmed &amp; Uncertain</span>
+        </div>
+      </div>
+
+      <!-- FRAME 3 -->
+      <div class="sb-film-frame sb-f3">
+        <div class="sb-frame-num">FRAME 03</div>
+        <div class="sb-frame-title-bar">T/E Review — Cross-Checking Systems</div>
+        <div class="sb-scene-wrap">
+          <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+            <defs><linearGradient id="sb-g3bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f3e5f5"/><stop offset="100%" stop-color="#ce93d8" stop-opacity=".4"/></linearGradient></defs>
+            <rect width="400" height="300" fill="url(#sb-g3bg)"/>
+            <rect x="20" y="208" width="360" height="15" fill="#795548" rx="2"/>
+            <rect x="15" y="72" width="130" height="128" fill="white" stroke="#7b1fa2" stroke-width="2" rx="5"/>
+            <rect x="15" y="72" width="130" height="22" fill="#7b1fa2" rx="5"/>
+            <rect x="15" y="88" width="130" height="6" fill="#7b1fa2"/>
+            <text x="80" y="85" font-size="8.5" fill="white" text-anchor="middle" font-weight="bold">System A — Timesheets</text>
+            <rect x="24" y="103" width="70" height="3" fill="#9c27b0" rx="1" opacity=".5"/>
+            <rect x="24" y="111" width="95" height="3" fill="#666" rx="1" opacity=".5"/>
+            <rect x="24" y="119" width="88" height="3" fill="#666" rx="1" opacity=".5"/>
+            <rect x="24" y="127" width="72" height="3" fill="#9c27b0" rx="1" opacity=".5"/>
+            <rect x="24" y="135" width="90" height="3" fill="#666" rx="1" opacity=".5"/>
+            <rect x="24" y="143" width="82" height="3" fill="#e53935" rx="1" opacity=".85"><animate attributeName="opacity" values=".85;.3;.85" dur="1.1s" repeatCount="indefinite"/></rect>
+            <rect x="24" y="151" width="95" height="3" fill="#666" rx="1" opacity=".5"/>
+            <rect x="24" y="159" width="68" height="3" fill="#e53935" rx="1" opacity=".85"><animate attributeName="opacity" values=".85;.3;.85" dur="1.3s" repeatCount="indefinite"/></rect>
+            <rect x="24" y="167" width="90" height="3" fill="#666" rx="1" opacity=".5"/>
+            <rect x="24" y="175" width="78" height="3" fill="#666" rx="1" opacity=".5"/>
+            <rect x="24" y="183" width="55" height="3" fill="#e53935" rx="1" opacity=".85"><animate attributeName="opacity" values=".85;.3;.85" dur=".9s" repeatCount="indefinite"/></rect>
+            <rect x="255" y="72" width="130" height="128" fill="white" stroke="#00838f" stroke-width="2" rx="5"/>
+            <rect x="255" y="72" width="130" height="22" fill="#00838f" rx="5"/>
+            <rect x="255" y="88" width="130" height="6" fill="#00838f"/>
+            <text x="320" y="85" font-size="8.5" fill="white" text-anchor="middle" font-weight="bold">System B — Expenses</text>
+            <rect x="264" y="103" width="70" height="3" fill="#00838f" rx="1" opacity=".5"/>
+            <rect x="264" y="111" width="95" height="3" fill="#666" rx="1" opacity=".5"/>
+            <rect x="264" y="119" width="88" height="3" fill="#666" rx="1" opacity=".5"/>
+            <rect x="264" y="127" width="72" height="3" fill="#666" rx="1" opacity=".5"/>
+            <rect x="264" y="135" width="90" height="3" fill="#666" rx="1" opacity=".5"/>
+            <rect x="264" y="143" width="82" height="3" fill="#666" rx="1" opacity=".5"/>
+            <rect x="264" y="151" width="95" height="3" fill="#e53935" rx="1" opacity=".85"><animate attributeName="opacity" values=".85;.3;.85" dur="1s" repeatCount="indefinite"/></rect>
+            <rect x="264" y="159" width="68" height="3" fill="#666" rx="1" opacity=".5"/>
+            <rect x="264" y="167" width="90" height="3" fill="#e53935" rx="1" opacity=".85"><animate attributeName="opacity" values=".85;.3;.85" dur="1.2s" repeatCount="indefinite"/></rect>
+            <rect x="264" y="175" width="78" height="3" fill="#666" rx="1" opacity=".5"/>
+            <rect x="264" y="183" width="55" height="3" fill="#666" rx="1" opacity=".5"/>
+            <g style="animation:sb-float 2.2s ease-in-out infinite;animation-delay:.3s"><g transform="translate(155,108)"><circle cx="34" cy="34" r="24" fill="rgba(255,152,0,.15)" stroke="#ff9800" stroke-width="5"/><line x1="52" y1="52" x2="70" y2="70" stroke="#ff9800" stroke-width="6" stroke-linecap="round"/><text x="34" y="40" font-size="22" text-anchor="middle" fill="#c62828">≠</text></g></g>
+            <g style="animation:sb-wobble 2.2s ease-in-out infinite"><ellipse cx="200" cy="190" rx="26" ry="33" fill="#1565c0"/><circle cx="200" cy="155" r="27" fill="#ffb74d"/><ellipse cx="200" cy="133" rx="27" ry="12" fill="#4a2200"/><ellipse cx="191" cy="153" rx="5.5" ry="3.5" fill="white"/><ellipse cx="209" cy="153" rx="5.5" ry="3.5" fill="white"/><circle cx="191" cy="153" r="2.5" fill="#222"/><circle cx="209" cy="153" r="2.5" fill="#222"/><path d="M185 143 Q191 139 197 143" stroke="#4a2200" stroke-width="2.5" fill="none"/><path d="M203 143 Q209 139 215 143" stroke="#4a2200" stroke-width="2.5" fill="none"/><path d="M192 164 Q200 167 208 164" stroke="#333" stroke-width="1.5" fill="none"/><circle cx="200" cy="185" r="14" fill="#1565c0" stroke="white" stroke-width="1.5"/><text x="200" y="190" font-size="9" fill="white" text-anchor="middle" font-weight="bold">BS</text><line x1="174" y1="183" x2="150" y2="168" stroke="#1565c0" stroke-width="8" stroke-linecap="round"/><line x1="226" y1="183" x2="252" y2="168" stroke="#1565c0" stroke-width="8" stroke-linecap="round"/></g>
+            <g style="animation:sb-pulse 1.4s ease-in-out infinite"><rect x="110" y="44" width="180" height="22" fill="#f44336" rx="11"/><text x="200" y="58" font-size="8.5" fill="white" text-anchor="middle" font-weight="bold">⚠  Missing Data Detected</text></g>
+            <text x="200" y="287" font-size="10.5" fill="#555" text-anchor="middle" font-style="italic" font-family="Georgia,serif">Manual cross-checking across disconnected systems. Gaps found too late.</text>
+          </svg>
+        </div>
+        <div class="sb-frame-caption">
+          The BS manually validates billable time &amp; expenses across disconnected systems. Missing or inconsistent data is only discovered <strong>late in the process</strong> — causing rework and delays.
+          <br><span class="sb-emo-tag">🤨 Cautious &amp; Detail-Oriented</span>
+        </div>
+      </div>
+
+      <!-- FRAME 4 -->
+      <div class="sb-film-frame sb-f4">
+        <div class="sb-frame-num">FRAME 04</div>
+        <div class="sb-frame-title-bar">Project Billing Request — Anxiety</div>
+        <div class="sb-scene-wrap">
+          <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+            <defs><linearGradient id="sb-g4bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff8e1"/><stop offset="100%" stop-color="#ffe0b2"/></linearGradient></defs>
+            <rect width="400" height="300" fill="url(#sb-g4bg)"/>
+            <rect x="20" y="210" width="360" height="15" fill="#795548" rx="2"/>
+            <rect x="95" y="58" width="210" height="155" fill="white" stroke="#e65100" stroke-width="2.5" rx="6"/>
+            <rect x="95" y="58" width="210" height="26" fill="#e65100" rx="6"/>
+            <rect x="95" y="78" width="210" height="6" fill="#e65100"/>
+            <text x="200" y="76" font-size="10" fill="white" text-anchor="middle" font-weight="bold">Project Billing Request</text>
+            <text x="110" y="100" font-size="8" fill="#444">Project ID:</text>
+            <rect x="162" y="91" width="128" height="12" fill="#f5f5f5" stroke="#ddd" stroke-width="1" rx="2"/><text x="166" y="101" font-size="7.5" fill="#444">PRJ-2024-0847</text>
+            <text x="110" y="117" font-size="8" fill="#444">Billing Amount:</text>
+            <rect x="162" y="108" width="128" height="12" fill="#f5f5f5" stroke="#ddd" stroke-width="1" rx="2"/><text x="166" y="118" font-size="7.5" fill="#444">€ 142,580.00</text>
+            <g style="animation:sb-pulse .9s ease-in-out infinite"><rect x="103" y="127" width="194" height="32" fill="#fff3e0" stroke="#ff9800" stroke-width="2" rx="4"/><text x="200" y="141" font-size="8.5" fill="#bf360c" text-anchor="middle" font-weight="bold">⚡ Unexpected Invoice Split!</text><text x="200" y="153" font-size="7" fill="#e65100" text-anchor="middle">2 billing lines require correction</text></g>
+            <g style="animation:sb-pulse 1.3s ease-in-out infinite;animation-delay:.4s"><rect x="103" y="165" width="194" height="22" fill="#ffebee" stroke="#ef5350" stroke-width="1.5" rx="4"/><text x="200" y="179" font-size="7.5" fill="#c62828" text-anchor="middle" font-weight="bold">⚠  90+ days of unbilled expenses</text></g>
+            <g style="animation:sb-pulse 1.6s ease-in-out infinite;animation-delay:.8s"><rect x="103" y="193" width="194" height="14" fill="#fce4ec" stroke="#c2185b" stroke-width="1" rx="4"/><text x="200" y="202" font-size="7" fill="#880e4f" text-anchor="middle">🚫 No preview of final invoice available</text></g>
+            <g style="animation:sb-float 2s ease-in-out infinite" transform="translate(318,90)"><path d="M28 12 Q48 -4 48 22 Q48 44 22 44 L22 33 L2 48 L22 63 L22 53 Q60 53 60 22 Q60 -18 28 -4 Z" fill="#ff7043" opacity=".9"/><text x="31" y="30" font-size="6.5" fill="white" text-anchor="middle" font-weight="bold">REWORK</text><text x="31" y="40" font-size="6.5" fill="white" text-anchor="middle">LOOP!</text></g>
+            <g style="animation:sb-shake 2.2s ease-in-out infinite;animation-delay:1.2s"><ellipse cx="200" cy="193" rx="26" ry="30" fill="#1565c0"/><circle cx="200" cy="162" r="25" fill="#ffb74d"/><ellipse cx="200" cy="141" rx="25" ry="11" fill="#4a2200"/><circle cx="191" cy="160" r="5.5" fill="white"/><circle cx="209" cy="160" r="5.5" fill="white"/><circle cx="192" cy="161" r="3.2" fill="#222"/><circle cx="210" cy="161" r="3.2" fill="#222"/><ellipse cx="222" cy="147" rx="3.5" ry="5.5" fill="#87ceeb" opacity=".85" transform="rotate(-20,222,147)"/><ellipse cx="226" cy="155" rx="2.5" ry="4" fill="#87ceeb" opacity=".7" transform="rotate(-15,226,155)"/><path d="M185 150 Q191 145 197 150" stroke="#4a2200" stroke-width="2.5" fill="none" transform="rotate(-8,191,148)"/><path d="M203 150 Q209 145 215 150" stroke="#4a2200" stroke-width="2.5" fill="none" transform="rotate(8,209,148)"/><path d="M192 171 Q200 169 208 171" stroke="#333" stroke-width="1.5" fill="none"/><circle cx="200" cy="190" r="14" fill="#1565c0" stroke="white" stroke-width="1.5"/><text x="200" y="195" font-size="9" fill="white" text-anchor="middle" font-weight="bold">BS</text><line x1="174" y1="187" x2="120" y2="180" stroke="#1565c0" stroke-width="8" stroke-linecap="round"/></g>
+            <text x="200" y="287" font-size="10.5" fill="#555" text-anchor="middle" font-style="italic" font-family="Georgia,serif">Creating PBR reveals surprise splits. 90+ days unbilled. No invoice preview.</text>
+          </svg>
+        </div>
+        <div class="sb-frame-caption">
+          While creating the PBR, the BS discovers <strong>unexpected invoice splits</strong> and long-unbilled expense periods with no preview of the final bill. Every correction risks a full rework loop.
+          <br><span class="sb-emo-tag">😰 Anxious About Correctness</span>
+        </div>
+      </div>
+
+      <!-- FRAME 5 -->
+      <div class="sb-film-frame sb-f5">
+        <div class="sb-frame-num">FRAME 05</div>
+        <div class="sb-frame-title-bar">Billing Document Request — Crisis</div>
+        <div class="sb-scene-wrap">
+          <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+            <defs><linearGradient id="sb-g5bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff8f8"/><stop offset="100%" stop-color="#fce4ec"/></linearGradient></defs>
+            <rect width="400" height="300" fill="url(#sb-g5bg)"/>
+            <rect width="400" height="300" fill="#ff0000" opacity=".04"><animate attributeName="opacity" values=".04;.09;.04" dur=".6s" repeatCount="indefinite"/></rect>
+            <rect x="20" y="212" width="360" height="15" fill="#795548" rx="2"/>
+            <rect x="12" y="62" width="118" height="145" fill="white" stroke="#c2185b" stroke-width="2" rx="5"/>
+            <rect x="12" y="62" width="118" height="20" fill="#c2185b" rx="5"/>
+            <rect x="12" y="76" width="118" height="6" fill="#c2185b"/>
+            <text x="71" y="75" font-size="8" fill="white" text-anchor="middle" font-weight="bold">App: Billing</text>
+            <g style="animation:sb-pulse .8s ease-in-out infinite"><rect x="19" y="91" width="103" height="15" fill="#ffcdd2" stroke="#e53935" stroke-width="1" rx="2"/><text x="70" y="101" font-size="7" fill="#b71c1c" text-anchor="middle" font-weight="bold">⚠  Tax Code Mismatch</text></g>
+            <rect x="19" y="109" width="103" height="14" fill="#fff9c4" rx="2"/><text x="70" y="119" font-size="7" fill="#e65100" text-anchor="middle">⚠  Amount Discrepancy</text>
+            <g style="animation:sb-pulse 1s ease-in-out infinite;animation-delay:.3s"><rect x="19" y="126" width="103" height="14" fill="#ffcdd2" rx="2"/><text x="70" y="136" font-size="7" fill="#b71c1c" text-anchor="middle">⚠  Currency Error</text></g>
+            <rect x="19" y="143" width="103" height="14" fill="#ffebee" rx="2"/><text x="70" y="153" font-size="7" fill="#c62828" text-anchor="middle">⚠  Missing Cost Centre</text>
+            <g style="animation:sb-pulse 1.1s ease-in-out infinite;animation-delay:.6s"><rect x="19" y="160" width="103" height="14" fill="#ffcdd2" rx="2"/><text x="70" y="170" font-size="7" fill="#b71c1c" text-anchor="middle">⚠  Profit Ctr Invalid</text></g>
+            <rect x="19" y="177" width="103" height="14" fill="#ffcdd2" rx="2"/><text x="70" y="187" font-size="7" fill="#b71c1c" text-anchor="middle">⚠  High-Value Overdue!</text>
+            <rect x="270" y="62" width="118" height="145" fill="white" stroke="#1565c0" stroke-width="2" rx="5"/>
+            <rect x="270" y="62" width="118" height="20" fill="#1565c0" rx="5"/>
+            <rect x="270" y="76" width="118" height="6" fill="#1565c0"/>
+            <text x="329" y="75" font-size="8" fill="white" text-anchor="middle" font-weight="bold">App: Project Data</text>
+            <rect x="278" y="91" width="100" height="9" fill="#e3f2fd" rx="2"/><rect x="278" y="104" width="100" height="9" fill="#e3f2fd" rx="2"/><rect x="278" y="117" width="100" height="9" fill="#bbdefb" rx="2"/><rect x="278" y="130" width="100" height="9" fill="#e3f2fd" rx="2"/><rect x="278" y="143" width="100" height="9" fill="#e3f2fd" rx="2"/><rect x="278" y="156" width="100" height="9" fill="#bbdefb" rx="2"/><rect x="278" y="169" width="100" height="9" fill="#e3f2fd" rx="2"/><rect x="278" y="182" width="100" height="9" fill="#e3f2fd" rx="2"/>
+            <g style="animation:sb-arrowSlide 1s ease-in-out infinite"><line x1="134" y1="130" x2="268" y2="130" stroke="#ff5722" stroke-width="2.5" stroke-dasharray="8 5"><animate attributeName="stroke-dashoffset" values="0;-26" dur=".6s" repeatCount="indefinite"/></line><polygon points="268,125 280,130 268,135" fill="#ff5722"/><polygon points="134,135 122,130 134,125" fill="#ff5722"/></g>
+            <text x="200" y="118" font-size="7.5" fill="#b71c1c" text-anchor="middle" font-weight="bold">MANUAL BACK &amp; FORTH<animate attributeName="opacity" values="1;.2;1" dur=".9s" repeatCount="indefinite"/></text>
+            <g style="animation:sb-float 1.8s ease-in-out infinite"><ellipse cx="200" cy="36" rx="88" ry="23" fill="#ef9a9a" opacity=".85"/><text x="200" y="32" font-size="8.5" fill="#b71c1c" text-anchor="middle" font-weight="bold">⏰  HIGH PRESSURE</text><text x="200" y="45" font-size="7.5" fill="#c62828" text-anchor="middle">Late exceptions = rework loop back!</text></g>
+            <g style="animation:sb-shake .45s ease-in-out infinite"><ellipse cx="200" cy="196" rx="24" ry="28" fill="#1565c0"/><circle cx="200" cy="165" r="23" fill="#ffb74d"/><ellipse cx="200" cy="146" rx="23" ry="10" fill="#4a2200"/><circle cx="191" cy="163" r="5" fill="white"/><circle cx="209" cy="163" r="5" fill="white"/><circle cx="192" cy="164" r="3" fill="#222"/><circle cx="210" cy="164" r="3" fill="#222"/><line x1="219" y1="150" x2="228" y2="146" stroke="#ff6b35" stroke-width="1.5"/><line x1="221" y1="156" x2="231" y2="153" stroke="#ff6b35" stroke-width="1.5"/><line x1="181" y1="150" x2="172" y2="146" stroke="#ff6b35" stroke-width="1.5"/><path d="M191 174 L194 170 L198 172 L201 170 L204 172 L208 170 L211 174" stroke="#333" stroke-width="1.5" fill="none"/><circle cx="200" cy="192" r="13" fill="#1565c0" stroke="white" stroke-width="1.5"/><text x="200" y="197" font-size="9" fill="white" text-anchor="middle" font-weight="bold">BS</text><line x1="177" y1="188" x2="140" y2="175" stroke="#1565c0" stroke-width="8" stroke-linecap="round"/><line x1="223" y1="188" x2="263" y2="175" stroke="#1565c0" stroke-width="8" stroke-linecap="round"/></g>
+            <text x="200" y="287" font-size="10.5" fill="#555" text-anchor="middle" font-style="italic" font-family="Georgia,serif">Exceptions cascade. High-value items overdue. No system guidance.</text>
+          </svg>
+        </div>
+        <div class="sb-frame-caption">
+          Generating the billing document triggers a cascade of exceptions. High-value items sit unbilled. The BS manually switches between apps with <strong>no system guidance</strong> on corrective actions.
+          <br><span class="sb-emo-tag">🤯 High Pressure</span>
+        </div>
+      </div>
+
+      <!-- FRAME 6 -->
+      <div class="sb-film-frame sb-f6">
+        <div class="sb-frame-num">FRAME 06</div>
+        <div class="sb-frame-title-bar">Sales Billing Approval &amp; Invoice Release</div>
+        <div class="sb-scene-wrap">
+          <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="sb-g6bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e8f4fd"/><stop offset="100%" stop-color="#bbdefb"/></linearGradient>
+              <linearGradient id="sb-g6inv" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#f5f5f5"/></linearGradient>
+            </defs>
+            <rect width="400" height="300" fill="url(#sb-g6bg)"/>
+            <rect x="20" y="212" width="360" height="15" fill="#795548" rx="2"/>
+            <rect x="98" y="55" width="210" height="162" fill="url(#sb-g6inv)" stroke="#1565c0" stroke-width="2" rx="6"/>
+            <rect x="98" y="55" width="210" height="28" fill="#1565c0" rx="6"/>
+            <rect x="98" y="77" width="210" height="6" fill="#1565c0"/>
+            <text x="203" y="72" font-size="12" fill="white" text-anchor="middle" font-weight="bold">INVOICE</text>
+            <text x="203" y="82" font-size="7" fill="#90caf9" text-anchor="middle">Draft — Pending Final Approval</text>
+            <line x1="108" y1="98" x2="298" y2="98" stroke="#e0e0e0" stroke-width="1"/>
+            <text x="113" y="111" font-size="7.5" fill="#333">Professional Services</text><text x="293" y="111" font-size="7.5" fill="#333" text-anchor="end">€ 85,200</text>
+            <text x="113" y="123" font-size="7.5" fill="#333">Time &amp; Expenses</text><text x="293" y="123" font-size="7.5" fill="#333" text-anchor="end">€ 42,380</text>
+            <text x="113" y="135" font-size="7.5" fill="#333">Consulting Fees</text><text x="293" y="135" font-size="7.5" fill="#333" text-anchor="end">€ 15,000</text>
+            <line x1="108" y1="141" x2="298" y2="141" stroke="#e0e0e0" stroke-width="1"/>
+            <text x="113" y="153" font-size="9" fill="#1565c0" font-weight="bold">TOTAL</text><text x="293" y="153" font-size="9" fill="#1565c0" font-weight="bold" text-anchor="end">€ 142,580</text>
+            <g style="animation:sb-pulse 1.1s ease-in-out infinite"><rect x="106" y="158" width="194" height="18" fill="#ffcdd2" stroke="#e53935" stroke-width="1.5" rx="3"/><text x="203" y="170" font-size="7.5" fill="#b71c1c" text-anchor="middle" font-weight="bold">⚠  Tax Code Inconsistency — Line 2</text></g>
+            <rect x="106" y="180" width="194" height="28" fill="#e8eaf6" stroke="#5c6bc0" stroke-width="1.5" rx="3"/>
+            <text x="203" y="193" font-size="7.5" fill="#283593" text-anchor="middle" font-weight="bold">Release to FI / Customer</text>
+            <text x="203" y="204" font-size="7" fill="#3949ab" text-anchor="middle">⛔ Blocked — Resolve errors first</text>
+            <g style="animation:sb-stampDrop 3s ease-in-out infinite"><rect x="198" y="68" width="80" height="42" fill="none" stroke="#c62828" stroke-width="3" rx="5" transform="rotate(-10,238,89)"/><text x="238" y="85" font-size="8.5" fill="#c62828" text-anchor="middle" font-weight="bold" transform="rotate(-10,238,85)">PENDING</text><text x="238" y="97" font-size="8.5" fill="#c62828" text-anchor="middle" font-weight="bold" transform="rotate(-10,238,97)">REVIEW</text></g>
+            <g style="animation:sb-wobble 2.8s ease-in-out infinite"><ellipse cx="58" cy="194" rx="25" ry="31" fill="#00838f"/><circle cx="58" cy="161" r="25" fill="#ffb74d"/><ellipse cx="58" cy="140" rx="25" ry="11" fill="#1a1a1a"/><circle cx="50" cy="160" r="7" fill="none" stroke="#333" stroke-width="1.8"/><circle cx="66" cy="160" r="7" fill="none" stroke="#333" stroke-width="1.8"/><line x1="57" y1="160" x2="59" y2="160" stroke="#333" stroke-width="1.8"/><line x1="43" y1="160" x2="40" y2="162" stroke="#333" stroke-width="1.5"/><line x1="73" y1="160" x2="76" y2="162" stroke="#333" stroke-width="1.5"/><circle cx="50" cy="161" r="3.2" fill="#222"/><circle cx="66" cy="161" r="3.2" fill="#222"/><path d="M50 170 Q58 172 66 170" stroke="#444" stroke-width="1.5" fill="none"/><circle cx="58" cy="189" r="13" fill="#00838f" stroke="white" stroke-width="1.5"/><text x="58" y="194" font-size="9" fill="white" text-anchor="middle" font-weight="bold">BC</text><line x1="80" y1="183" x2="104" y2="162" stroke="#00838f" stroke-width="8" stroke-linecap="round"/><rect x="104" y="150" width="5" height="18" fill="#222" rx="2" transform="rotate(-30,107,159)"/><polygon points="107,164 104,170 110,170" fill="#e53935" transform="rotate(-30,107,167)"/></g>
+            <g transform="translate(332,56)"><circle cx="24" cy="24" r="21" fill="white" stroke="#555" stroke-width="2"/><circle cx="24" cy="24" r="2" fill="#333"/><line x1="24" y1="24" x2="24" y2="8" stroke="#333" stroke-width="2" stroke-linecap="round"/><line x1="24" y1="24" x2="37" y2="31" stroke="#c62828" stroke-width="2" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 24 24" to="360 24 24" dur="4s" repeatCount="indefinite"/></line><text x="24" y="54" font-size="7" fill="#888" text-anchor="middle">DEADLINE</text></g>
+            <g style="animation:sb-floatB 2.2s ease-in-out infinite;animation-delay:.8s"><rect x="314" y="148" width="76" height="52" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5" rx="4" transform="rotate(4,352,174)"/><text x="352" y="163" font-size="7.5" fill="#e65100" text-anchor="middle" font-weight="bold" transform="rotate(4,352,163)">Risk: Rejection</text><text x="352" y="175" font-size="7" fill="#666" text-anchor="middle" transform="rotate(4,352,175)">→ Back to PBR</text><text x="352" y="185" font-size="7" fill="#666" text-anchor="middle" transform="rotate(4,352,185)">→ Correct data</text><text x="352" y="195" font-size="7" fill="#666" text-anchor="middle" transform="rotate(4,352,195)">→ Revalidate all</text></g>
+            <text x="200" y="287" font-size="10.5" fill="#555" text-anchor="middle" font-style="italic" font-family="Georgia,serif">Final check before customer &amp; FI release. Errors surface at the last step.</text>
+          </svg>
+        </div>
+        <div class="sb-frame-caption">
+          The <strong>Billing Clerk</strong> reviews the invoice under deadline pressure. Late-surfacing errors and inconsistencies risk rejection — requiring navigation back through the entire billing chain.
+          <br><span class="sb-emo-tag">😟 Cautious &amp; Under Pressure</span>
+        </div>
+      </div>
+
+    </div><!-- /sb-frames-grid -->
+
+    <div class="sb-perf-row" id="sb-pr-bot"></div>
+
+    <!-- Emotional Arc -->
+    <div class="sb-arc-section">
+      <svg viewBox="0 0 1200 64" width="100%" style="display:block">
+        <line x1="60" y1="30" x2="1140" y2="30" stroke="#444" stroke-width="1.5" stroke-dasharray="8 5"/>
+        <path d="M60,22 C200,18 300,22 460,24 S660,30 860,34 S1060,38 1140,40" stroke="#ff6b35" stroke-width="3" fill="none" opacity=".8"/>
+        <circle cx="60"   cy="22" r="9" fill="#4caf50"/><circle cx="260" cy="24" r="9" fill="#ff9800"/><circle cx="460" cy="24" r="9" fill="#ff9800"/><circle cx="660" cy="31" r="9" fill="#f44336"/><circle cx="860" cy="34" r="9" fill="#b71c1c"/><circle cx="1140" cy="40" r="9" fill="#6a1b9a"/>
+        <text x="60"   y="56" font-size="15" text-anchor="middle">😊</text>
+        <text x="260"  y="56" font-size="15" text-anchor="middle">😮</text>
+        <text x="460"  y="56" font-size="15" text-anchor="middle">🤨</text>
+        <text x="660"  y="56" font-size="15" text-anchor="middle">😰</text>
+        <text x="860"  y="56" font-size="15" text-anchor="middle">🤯</text>
+        <text x="1140" y="56" font-size="15" text-anchor="middle">😟</text>
+      </svg>
+    </div>
+    <div class="sb-arc-label">Emotional Arc — Confident → Overwhelmed → Cautious → Anxious → Crisis → Under Pressure</div>
+
+  </div><!-- /sb-filmstrip -->
+
+  <script>
+    ['sb-pr-top','sb-pr-bot'].forEach(function(id){
+      var row = document.getElementById(id);
+      if(!row) return;
+      for(var i=0;i<32;i++){
+        var h=document.createElement('div');
+        h.className='sb-perf';
+        row.appendChild(h);
+      }
+    });
+  </script>
+
+  <script>
+    (function () {
+      var fs = document.querySelector('#storyboard .sb-filmstrip');
+      if (!fs) return;
+      var scale = 0.75;
+      function fix() {
+        fs.style.marginBottom = '';
+        var h = fs.offsetHeight;
+        fs.style.marginBottom = '-' + Math.round(h * (1 - scale)) + 'px';
+      }
+      fix();
+      window.addEventListener('resize', fix);
+    })();
+  </script>
+</section>
+
+<!-- ────────────────── PAIN POINTS ────────────────── -->
+<section id="pain">
+  <div class="container">
+    <p class="section-label">Problem Space</p>
+    <h2 class="section-title">Six Core Pain Points of a Billing Specialist</h2>
+    <p class="section-subtitle" style="color:rgba(255,255,255,.65);">
+      Discovered through day-in-the-life sessions, user interviews, Customer Councils, Qualtrics surveys, and cloud reporting data.
+    </p>
+    <div class="pain-grid">
+      <div class="pain-card">
+        <div class="pain-icon">🎯</div>
+        <h3>Lack of Prioritisation and Focus</h3>
+        <p>Billing Specialists struggle to determine <em>what to work on first</em>. High-value and <em>overdue items are not clearly highlighted</em>, leading to inefficient task prioritisation and delayed billing.</p>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">🔀</div>
+        <h3>Fragmented Process &amp; App Switching</h3>
+        <p>The billing process requires <em>navigating multiple applications</em> and business objects without a clear starting point. This fragmentation leads to <em>confusion, redundant steps</em>, and higher effort.</p>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">⏰</div>
+        <h3>Late Discovery of Issues &amp; Rework</h3>
+        <p>Critical issues such as invoice splitting and billing errors are often <em>discovered only at very late stages</em>, forcing users to <em>cancel submissions</em> and repeat the entire process.</p>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">🔍</div>
+        <h3>Limited Transparency &amp; Explainability</h3>
+        <p><em>Key figures, columns, warnings</em>, and aggregated numbers in billing apps are not clearly explained. Users do not understand <em>how values are calculated</em> or what actions are required next.</p>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">🔁</div>
+        <h3>Manual Effort &amp; Repetitive Actions</h3>
+        <p>Users repeatedly perform <em>the same actions and data inputs</em> across different steps and apps, increasing effort and frustration while providing little added value.</p>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">📋</div>
+        <h3>Incomplete Billing Readiness &amp; Preview</h3>
+        <p>Billing Specialists <em>lack early visibility into billing readiness</em>, including the inability to preview invoices during PBR creation. Approved time and expenses can remain unbilled for long periods.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────── RESEARCH APPROACH ────────────────── -->
+<section id="research">
+  <div class="container">
+    <p class="section-label">Research Approach</p>
+    <h2 class="section-title">Human-Centred Design Process — ISO 9241-11</h2>
+    <p class="section-subtitle">
+      Exploratory design research focusing on experience and workflow automation using a mixed-method UX approach across four iterative phases.
+    </p>
+    <div class="hcd-grid">
+      <div class="hcd-card">
+        <div class="hcd-step">1</div>
+        <h3>Understanding &amp; Defining Context of Use</h3>
+        <ul>
+          <li>Preliminary literature review</li>
+          <li>SAP internal research &amp; documentation</li>
+          <li>User interviews (4 participants)</li>
+          <li>Project set-up in S/4HANA Public Cloud</li>
+          <li>Business process flow mapping</li>
+          <li>E2E process documentation</li>
+        </ul>
+      </div>
+      <div class="hcd-card">
+        <div class="hcd-step">2</div>
+        <h3>Defining User Requirements</h3>
+        <ul>
+          <li>Discovery workshop (7 participants)</li>
+          <li>Synthesis of findings into opportunities</li>
+          <li>User journey mapping</li>
+          <li>Summary &amp; clustering of pain points</li>
+          <li>User requirements definition</li>
+          <li>User stories &amp; use case creation</li>
+        </ul>
+      </div>
+      <div class="hcd-card">
+        <div class="hcd-step">3</div>
+        <h3>Developing Design Solution</h3>
+        <ul>
+          <li>Ideas exploration — 7 feasible &amp; futuristic concepts</li>
+          <li>Weighted decision matrix</li>
+          <li>High-fidelity Joule prototype</li>
+          <li>2 finalized use cases selected</li>
+        </ul>
+      </div>
+      <div class="hcd-card">
+        <div class="hcd-step">4</div>
+        <h3>Evaluating the Design</h3>
+        <ul>
+          <li>User recruitment &amp; screening</li>
+          <li>Online usability testing (4 sessions)</li>
+          <li>User Feedback Day, Walldorf (3 in-person)</li>
+          <li>Customer Council, Berlin (22 customers)</li>
+          <li>Concept refinement</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────── CONCEPT ────────────────── -->
+<section id="concept">
+  <div class="container">
+    <div class="concept-wrap">
+
+      <!-- Mockup -->
+      <div class="joule-mockup">
+        <div class="joule-header">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span>SAP S/4HANA Cloud · Home</span>
+        </div>
+        <div class="joule-body">
+          <div class="joule-topbar">
+            <span class="breadcrumb">My Home &nbsp;/&nbsp; Project Billing</span>
+            <div class="actions">
+              <button class="btn-outline">Recap</button>
+              <button class="btn-joule">⚡ My Home Settings</button>
+            </div>
+          </div>
+
+          <div style="background:#F5F6F7;border-radius:8px;padding:12px;margin-bottom:12px;">
+            <div style="font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:8px;">To-Dos &nbsp; · &nbsp; Situations (1)</div>
+            <div class="situation-card">
+              <div class="priority-badge">⬤ &nbsp; High Priority</div>
+              <div class="title">2 Billing Elements Overdue</div>
+              <div class="meta">Project: <strong>ABC GmbH – IT (R1299)</strong></div>
+              <div class="meta">Customer: Inlandskunde DE</div>
+              <div class="meta">To Bill: <strong>€ 30,800.00 EUR</strong></div>
+              <div class="meta">Earliest Billing Due Date: <strong>12.02.2026</strong></div>
+              <div class="btns">
+                <button class="btn-outline">Open App</button>
+                <button class="btn-joule">⚡ Use Joule</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="background:#F5F6F7;border-radius:8px;padding:12px;">
+            <div style="font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:8px;">Recommended Apps</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div style="background:#fff;border-radius:6px;padding:8px;font-size:11px;color:var(--text-secondary);border:1px solid var(--border);">📋 Manage Project Billing</div>
+              <div style="background:#fff;border-radius:6px;padding:8px;font-size:11px;color:var(--text-secondary);border:1px solid var(--border);">📄 Prepare Billing</div>
+              <div style="background:#fff;border-radius:6px;padding:8px;font-size:11px;color:var(--text-secondary);border:1px solid var(--border);">📑 Create Preliminary Billing</div>
+              <div style="background:#fff;border-radius:6px;padding:8px;font-size:11px;color:var(--text-secondary);border:1px solid var(--border);">📊 Manage Billing Documents</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="concept-content">
+        <p class="section-label">Design Concept</p>
+        <h2 class="section-title">Project Billing as a Joule Workflow</h2>
+        <p>
+          SAP Joule is the AI-powered copilot embedded in SAP applications. It provides contextual insights, prioritised situation cards, and guided actions — directly within the user's workflow — without forcing them to switch between multiple apps.
+        </p>
+        <p>
+          The design concept uses Joule's <strong>Situation Handling</strong> framework to proactively surface billing risks before they become costly errors, ranked by urgency and financial impact.
+        </p>
+        <ul class="feature-list">
+          <li>
+            <span class="check">✓</span>
+            <span><strong>Proactive Situation Cards</strong> — Surface billing risks and overdue items with priority badges, financial context, and one-click actions before the user begins their workflow.</span>
+          </li>
+          <li>
+            <span class="check">✓</span>
+            <span><strong>Guided Resolution</strong> — Each situation card offers contextual action buttons (Use Joule / Open App) and tracks resolution status ("notified" vs "resolved").</span>
+          </li>
+          <li>
+            <span class="check">✓</span>
+            <span><strong>AI-Powered Risk Analysis</strong> — Joule analyses billing elements, detects invoice split risks, price discrepancies, and missing cost centres before PBR creation.</span>
+          </li>
+          <li>
+            <span class="check">✓</span>
+            <span><strong>End-to-End Workflow</strong> — From billing readiness check through issue resolution, to billing request creation and invoice submission — all within one guided experience.</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────── DEMO VIDEO ────────────────── -->
+<section id="demo" style="background:#0A0A2E; padding:80px 48px;">
+  <div class="container">
+    <p class="section-label" style="color:var(--sap-accent);">Prototype Demo</p>
+    <h2 class="section-title" style="color:#fff; margin-bottom:12px;">Watch the Joule Billing Workflow in Action</h2>
+    <p style="font-size:17px; color:rgba(255,255,255,.65); max-width:640px; margin-bottom:40px; line-height:1.65;">
+      A walkthrough of the high-fidelity Joule prototype — from the situation card on the S/4HANA launchpad through risk analysis and billing request creation.
+    </p>
+    <div style="
+      max-width: 960px;
+      margin: 0 auto;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.08);
+      background: #000;
+    ">
+      <!-- macOS-style window chrome -->
+      <div style="background:#1A1A2E; padding:12px 16px; display:flex; align-items:center; gap:8px; border-bottom:1px solid rgba(255,255,255,.08);">
+        <span style="width:12px;height:12px;border-radius:50%;background:#FF5F57;display:inline-block;"></span>
+        <span style="width:12px;height:12px;border-radius:50%;background:#FFBD2E;display:inline-block;"></span>
+        <span style="width:12px;height:12px;border-radius:50%;background:#28CA41;display:inline-block;"></span>
+        <span style="margin-left:12px;font-size:12px;color:rgba(255,255,255,.4);">Joule · Project Billing Prototype — Screen Recording</span>
+      </div>
+      <video
+        controls
+        preload="metadata"
+        style="width:100%; display:block; max-height:600px; background:#000;"
+        poster=""
+      >
+        <source src="file:///Users/I765693/Desktop/Screen%20Recording%202026-04-20%20at%2011.24.07.mov" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────── EVALUATION ────────────────── -->
+<section id="evaluation">
+  <div class="container">
+    <p class="section-label">Evaluation Results</p>
+    <h2 class="section-title">Quantitative Analysis</h2>
+    <p class="section-subtitle">
+      7 moderated usability sessions + 21 Customer Council responses using UEQ-S, NASA-TLX, PSAT, and UX Lite instruments.
+    </p>
+
+    <div class="eval-grid">
+
+      <!-- NASA TLX -->
+      <div class="eval-card">
+        <h3>Cognitive Load — NASA TLX <span style="font-size:11px;font-weight:400;">(lower = better)</span></h3>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-dot current"></div> Current System</div>
+          <div class="legend-item"><div class="legend-dot joule"></div> Joule Prototype</div>
+        </div>
+        <div class="bar-group">
+          <div class="bar-row">
+            <span class="bar-label">Mental Demand</span>
+            <div class="bar-track">
+              <div class="bar-fill current" style="width:21.4%"></div>
+            </div>
+            <span class="bar-val">21.4</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label"></span>
+            <div class="bar-track">
+              <div class="bar-fill joule" style="width:27.1%"></div>
+            </div>
+            <span class="bar-val" style="color:var(--sap-negative);">27.1 ↑</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">Time Pressure</span>
+            <div class="bar-track">
+              <div class="bar-fill current" style="width:42.8%"></div>
+            </div>
+            <span class="bar-val">42.8</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label"></span>
+            <div class="bar-track">
+              <div class="bar-fill joule" style="width:37.1%"></div>
+            </div>
+            <span class="bar-val" style="color:var(--sap-positive);">37.1 ↓</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">Effort</span>
+            <div class="bar-track">
+              <div class="bar-fill current" style="width:24.2%"></div>
+            </div>
+            <span class="bar-val">24.2</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label"></span>
+            <div class="bar-track">
+              <div class="bar-fill joule" style="width:26.4%"></div>
+            </div>
+            <span class="bar-val">26.4</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">Frustration</span>
+            <div class="bar-track">
+              <div class="bar-fill current" style="width:16.4%"></div>
+            </div>
+            <span class="bar-val">16.4</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label"></span>
+            <div class="bar-track">
+              <div class="bar-fill joule" style="width:15.7%"></div>
+            </div>
+            <span class="bar-val" style="color:var(--sap-positive);">15.7 ↓</span>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--text-secondary);margin-top:16px;font-style:italic;">Pattern: faster triage, but more thinking/verification.</p>
+      </div>
+
+      <!-- PSAT / Satisfaction -->
+      <div class="eval-card">
+        <h3>Perceived Usability &amp; Satisfaction <span style="font-size:11px;font-weight:400;">(1–5 scale)</span></h3>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-dot current"></div> Current System</div>
+          <div class="legend-item"><div class="legend-dot joule"></div> Joule Prototype</div>
+        </div>
+        <div class="score-grid" style="margin-top:12px;">
+          <div class="score-item">
+            <div class="score-label">Overall Satisfaction</div>
+            <div class="score-pair">
+              <div class="score-bar-wrap">
+                <div class="score-bar current" style="height:74px;"></div>
+                <div class="score-bar-num">3.7</div>
+                <div class="score-bar-tag">Current</div>
+              </div>
+              <div class="score-bar-wrap">
+                <div class="score-bar joule" style="height:76px;"></div>
+                <div class="score-bar-num">3.8</div>
+                <div class="score-bar-tag">Joule</div>
+              </div>
+            </div>
+          </div>
+          <div class="score-item">
+            <div class="score-label">Does What I Need</div>
+            <div class="score-pair">
+              <div class="score-bar-wrap">
+                <div class="score-bar current" style="height:76px;"></div>
+                <div class="score-bar-num">3.8</div>
+                <div class="score-bar-tag">Current</div>
+              </div>
+              <div class="score-bar-wrap">
+                <div class="score-bar joule" style="height:70px;"></div>
+                <div class="score-bar-num">3.5</div>
+                <div class="score-bar-tag">Joule</div>
+              </div>
+            </div>
+          </div>
+          <div class="score-item">
+            <div class="score-label">Easy to Use</div>
+            <div class="score-pair">
+              <div class="score-bar-wrap">
+                <div class="score-bar current" style="height:70px;"></div>
+                <div class="score-bar-num">3.5</div>
+                <div class="score-bar-tag">Current</div>
+              </div>
+              <div class="score-bar-wrap">
+                <div class="score-bar joule" style="height:74px;"></div>
+                <div class="score-bar-num">3.7</div>
+                <div class="score-bar-tag">Joule</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--text-secondary);margin-top:20px;">Joule scored higher on ease-of-use and satisfaction; current system led on "does what I need" due to missing billing summary and unclear actions.</p>
+      </div>
+
+      <!-- Business Sentiment -->
+      <div class="eval-card">
+        <h3>Customer Council Sentiment <span style="font-size:11px;font-weight:400;">(N=21, 1–5 scale)</span></h3>
+        <div class="sentiment-grid" style="margin-top:8px;">
+          <div class="sentiment-item">
+            <div class="q">Value for improving billing efficiency &amp; reducing errors</div>
+            <div class="score-row">
+              <div class="sentiment-track"><div class="sentiment-fill" style="width:88.4%"></div></div>
+              <div class="sentiment-score">4.42</div>
+            </div>
+          </div>
+          <div class="sentiment-item">
+            <div class="q">Investment opportunity for SAP and customers</div>
+            <div class="score-row">
+              <div class="sentiment-track"><div class="sentiment-fill" style="width:82.8%"></div></div>
+              <div class="sentiment-score">4.14</div>
+            </div>
+          </div>
+          <div class="sentiment-item">
+            <div class="q">Comfort with AI guiding billing decisions</div>
+            <div class="score-row">
+              <div class="sentiment-track"><div class="sentiment-fill" style="width:80%"></div></div>
+              <div class="sentiment-score">4.00</div>
+            </div>
+          </div>
+          <div class="sentiment-item">
+            <div class="q">Likelihood of company adoption</div>
+            <div class="score-row">
+              <div class="sentiment-track"><div class="sentiment-fill" style="width:78%"></div></div>
+              <div class="sentiment-score">3.90</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:20px;padding:14px;background:var(--bg-page);border-radius:8px;">
+          <p style="font-size:12px;font-style:italic;color:var(--text-secondary);margin-bottom:6px;">"Billing is too complex — guiding &amp; prompting potential issues sooner is better"</p>
+          <p style="font-size:12px;font-style:italic;color:var(--text-secondary);">"This solution would give the chance to distribute responsibility in the future"</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────── HYPOTHESES ────────────────── -->
+<section id="hypotheses">
+  <div class="container">
+    <p class="section-label">Hypotheses Validation</p>
+    <h2 class="section-title">Did the Study Hypotheses Hold?</h2>
+    <p class="section-subtitle">
+      Three hypotheses were tested across the within-subjects usability study.
+    </p>
+    <div class="hyp-grid">
+      <div class="hyp-card partial">
+        <span class="tag">⚠ Partially Supported</span>
+        <h3>H1 — Higher Usability</h3>
+        <p>Discovery improved; resolution and submission are gated by trust and action clarity. Users found risks faster but needed app verification before committing to billing decisions.</p>
+      </div>
+      <div class="hyp-card partial">
+        <span class="tag">⚠ Partially Supported</span>
+        <h3>H2 — Lower Perceived Complexity</h3>
+        <p>Cognitive load reduced for issue identification. Adding billing summaries and progressive disclosure would fully realise this hypothesis. Mental demand increased slightly due to verification.</p>
+      </div>
+      <div class="hyp-card supported">
+        <span class="tag">✓ Supported</span>
+        <h3>H3 — Greater Risk Confidence</h3>
+        <p>Users found billing risks faster and with greater clarity using Joule situation cards. Full confidence to submit without verification still requires improved transparency and data source explainability.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────── KEY FINDINGS ────────────────── -->
+<section id="findings">
+  <div class="container">
+    <p class="section-label">Key Findings</p>
+    <h2 class="section-title">What the Research Revealed</h2>
+    <p class="section-subtitle">Six findings distilled from qualitative and quantitative analysis across all study streams.</p>
+    <div class="finding-grid">
+      <div class="finding-card">
+        <div class="finding-num">01</div>
+        <div>
+          <h3>Earlier Issue Detection &amp; Prioritisation</h3>
+          <p>Situation cards reduce searching and highlight what matters first. Users clicked directly on high-priority prompts and valued quick visibility into overdue items and key risks.</p>
+        </div>
+      </div>
+      <div class="finding-card">
+        <div class="finding-num">02</div>
+        <div>
+          <h3>Lower Time Pressure, Smoother Flow</h3>
+          <p>NASA-TLX pace/temporal demand dropped by 5.7 points. Users reported feeling less rushed during the triage phase of billing preparation.</p>
+        </div>
+      </div>
+      <div class="finding-card">
+        <div class="finding-num">03</div>
+        <div>
+          <h3>Usability Improves — Especially for Non-Experts</h3>
+          <p>More intuitive onboarding. Joule scored higher on ease-of-use. Complex billing cases and newer users benefited the most from guided guidance.</p>
+        </div>
+      </div>
+      <div class="finding-card">
+        <div class="finding-num">04</div>
+        <div>
+          <h3>Cognitive Effort Not Yet Reduced</h3>
+          <p>Users still verify AI suggestions in the app. Mental demand rose by 5.7 points. The concept currently serves as an assistive layer, not a replacement for expert verification.</p>
+        </div>
+      </div>
+      <div class="finding-card">
+        <div class="finding-num">05</div>
+        <div>
+          <h3>Trust &amp; Actionability Limit Adoption</h3>
+          <p>Missing billing summary before submit, unclear "Send email" actions, and lack of deep links to exact items reduce perceived functional sufficiency and trustworthiness.</p>
+        </div>
+      </div>
+      <div class="finding-card">
+        <div class="finding-num">06</div>
+        <div>
+          <h3>Best Fit Today: Assistive Layer</h3>
+          <p>Joule augments the workflow rather than replacing it. For clean cases, the current system is faster. AI delivers more benefit for complex billing or less-experienced users.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────── SYNTHESIS ────────────────── -->
+<section id="synthesis">
+  <div class="container">
+    <p class="section-label">Synthesis</p>
+    <h2 class="section-title" style="color:#fff;">Qualitative + Quantitative Synthesis</h2>
+    <div class="synthesis-rows" style="margin-top:32px;">
+      <div class="synth-row">
+        <div class="synth-arrow">↓</div>
+        <div class="text"><strong>Pace (NASA TLX)</strong> → Users feel less rushed. <em>Guided flow via situation cards reduces scanning.</em></div>
+      </div>
+      <div class="synth-row">
+        <div class="synth-arrow">↑</div>
+        <div class="text"><strong>Mental Demand &amp; Effort (NASA TLX)</strong> → More thinking required. <em>Users verify in app; low trust in AI outputs initially.</em></div>
+      </div>
+      <div class="synth-row">
+        <div class="synth-arrow">↑</div>
+        <div class="text"><strong>Satisfaction &amp; Ease of Use (PSAT/UX Lite)</strong> → <em>"Cleaner", "more intuitive", better guidance</em> were the most frequent qualitative codes.</div>
+      </div>
+      <div class="synth-row">
+        <div class="synth-arrow">↓</div>
+        <div class="text"><strong>"Does What I Need" (PSAT)</strong> → <em>Missing billing summary, unclear actions ("Send email"), need deep links</em> to exact items.</div>
+      </div>
+      <div class="synth-row">
+        <div class="synth-arrow">≈</div>
+        <div class="text"><strong>UEQ-S: Hedonic &gt; Pragmatic Gains</strong> → <em>Experience improves more than end-to-end task completion.</em></div>
+      </div>
+    </div>
+    <div class="synthesis-final">
+      Joule improves <strong>how users navigate and understand</strong> the work, but not yet <strong>how fully they can complete it without leaving the app.</strong>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────── LIMITATIONS ────────────────── -->
+<section id="limitations">
+  <div class="container">
+    <p class="section-label">Limitations &amp; Dependencies</p>
+    <h2 class="section-title">Study Constraints to Consider</h2>
+    <p class="section-subtitle">Results indicate clear direction and value but require validation in a real, integrated environment with larger samples.</p>
+    <div class="limit-grid">
+      <div class="limit-item">
+        <span class="icon">👥</span>
+        <div>
+          <h4>Small Sample Size (N=7)</h4>
+          <p>Findings are indicative, not statistically generalizable. Larger samples with diverse experience levels are needed.</p>
+        </div>
+      </div>
+      <div class="limit-item">
+        <span class="icon">🖥</span>
+        <div>
+          <h4>Prototype Fidelity</h4>
+          <p>The Joule prototype was not fully integrated with live S/4HANA apps. Real integration may surface additional usability gaps.</p>
+        </div>
+      </div>
+      <div class="limit-item">
+        <span class="icon">⏳</span>
+        <div>
+          <h4>Short Exposure</h4>
+          <p>No longitudinal trust or learning effects could be measured. Trust in AI typically builds over weeks of repeated use.</p>
+        </div>
+      </div>
+      <div class="limit-item">
+        <span class="icon">📍</span>
+        <div>
+          <h4>Scope Constraint</h4>
+          <p>Focus was limited to Project Billing (not the full E2E sales billing chain), which constrains generalizability.</p>
+        </div>
+      </div>
+      <div class="limit-item">
+        <span class="icon">⏱</span>
+        <div>
+          <h4>No Objective Time Metrics</h4>
+          <p>Task efficiency was inferred from self-reported data and think-aloud sessions. Time-on-task logging was not captured.</p>
+        </div>
+      </div>
+      <div class="limit-item">
+        <span class="icon">🏢</span>
+        <div>
+          <h4>Organisational Factors</h4>
+          <p>Varied workflows, billing models, contract types, data quality, and authorization constraints across organisations.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────── FUTURE SCOPE ────────────────── -->
+<section id="future">
+  <div class="container">
+    <p class="section-label">Future Scope</p>
+    <h2 class="section-title">Where This Research Leads</h2>
+    <p class="section-subtitle">Five strategic directions that build on this thesis toward a fully autonomous, intelligent ERP billing experience.</p>
+    <div class="future-grid">
+      <div class="future-card">
+        <h3>🏢 Shift Billing Ownership to the Front Office</h3>
+        <ul>
+          <li>Enable Project Managers to take a more active billing role</li>
+          <li>Reduce dependency on back-office handoffs</li>
+          <li>Support distributed responsibility with guided AI workflows</li>
+        </ul>
+      </div>
+      <div class="future-card">
+        <h3>🤖 Towards an Agentic Billing Experience</h3>
+        <ul>
+          <li>Evolve from assistive AI → AI that can execute actions with human oversight</li>
+          <li>Automate repetitive decisions (standard corrections, validations)</li>
+          <li>Introduce human-in-the-loop approval mechanisms</li>
+        </ul>
+      </div>
+      <div class="future-card">
+        <h3>⚡ Foundation for an Agentic ERP (Joule Vision)</h3>
+        <ul>
+          <li>Position Joule as a bridge towards a fully autonomous ERP experience</li>
+          <li>Extend AI support beyond billing to cross-functional workflows</li>
+          <li>Enable context-aware, end-to-end process orchestration</li>
+        </ul>
+      </div>
+      <div class="future-card">
+        <h3>🔗 End-to-End Project Workflow Automation</h3>
+        <ul>
+          <li>Connect: Time recording → Approvals → Billing → Invoicing</li>
+          <li>Reduce manual handoffs and fragmented workflows</li>
+          <li>Provide one coherent, guided experience across all steps</li>
+        </ul>
+      </div>
+      <div class="future-card">
+        <h3>📈 Scalability for Enterprise Use</h3>
+        <ul>
+          <li>Support high-volume, multi-project month-end scenarios</li>
+          <li>Introduce prioritization, filtering, and batch processing</li>
+          <li>Ensure performance with large datasets and complex billing structures</li>
+        </ul>
+      </div>
+      <div class="future-card">
+        <h3>🔬 Validated with Real Users</h3>
+        <ul>
+          <li>Longitudinal study with integrated S/4HANA environment</li>
+          <li>Objective time-on-task and completion rate measurement</li>
+          <li>Larger sample across billing models and organisation types</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────── PSA TEAM IMPACT ────────────────── -->
+<section id="psa-impact">
+  <div class="container">
+    <p class="section-label">PSA Team Impact</p>
+    <h2 class="section-title">How Does It Help the PSA Team?</h2>
+    <p class="section-subtitle">Beyond the research findings, this thesis delivered concrete, strategic value to the SAP Professional Services &amp; Billing product team — across discovery, design, and product direction.</p>
+
+    <!-- Row 1: 4 contribution pillars -->
+    <div class="psa-intro-grid">
+      <div class="psa-intro-card">
+        <span class="psa-intro-icon">🧠</span>
+        <h4>Deep understanding of user expectations &amp; interactions with Joule</h4>
+      </div>
+      <div class="psa-intro-card">
+        <span class="psa-intro-icon">🤝</span>
+        <h4>Organisation &amp; execution of customer and user workshops</h4>
+      </div>
+      <div class="psa-intro-card">
+        <span class="psa-intro-icon">🗺️</span>
+        <h4>Exploration of multiple solution &amp; navigation approaches in Project Billing</h4>
+      </div>
+      <div class="psa-intro-card">
+        <span class="psa-intro-icon">🚀</span>
+        <h4>Enhanced our flagship lighthouse product — S/4HC Public Cloud</h4>
+      </div>
+    </div>
+
+    <!-- Row 2: 5 impact cards -->
+    <div class="psa-impact-grid">
+      <div class="psa-impact-card">
+        <div class="psa-impact-num">Impact 01</div>
+        <h3>Shifted Billing from Reactive to Proactive</h3>
+        <p>Provided a clear blueprint for transforming Project Billing so AI can anticipate billing discrepancies and unbilled revenue before they become critical issues — not after.</p>
+        <div class="psa-impact-tag">Strategic Direction</div>
+      </div>
+      <div class="psa-impact-card">
+        <div class="psa-impact-num">Impact 02</div>
+        <h3>Validated the AI Approach with Evidence</h3>
+        <p>A direct comparison between the existing solution and the AI-enhanced prototype provided data-backed proof of improvements in billing accuracy, efficiency, and reduced manual effort.</p>
+        <div class="psa-impact-tag">Product Confidence</div>
+      </div>
+      <div class="psa-impact-card">
+        <div class="psa-impact-num">Impact 03</div>
+        <h3>Championed Modern, User-Centric Design</h3>
+        <p>Demonstrated how to build a more intuitive, guided billing process — significantly lowering the learning curve and reducing human error, especially for users new to the system.</p>
+        <div class="psa-impact-tag">UX Quality</div>
+      </div>
+      <div class="psa-impact-card">
+        <div class="psa-impact-num">Impact 04</div>
+        <h3>Provided Strategic Clarity for the Roadmap</h3>
+        <p>Delivered crucial insights into real user needs and pain points, giving the product team greater confidence to make informed roadmap decisions and justify an AI-first strategy.</p>
+        <div class="psa-impact-tag">Roadmap Clarity</div>
+      </div>
+      <div class="psa-impact-card">
+        <div class="psa-impact-num">Impact 05</div>
+        <h3>Reduced Onboarding Time &amp; Boosted Adoption</h3>
+        <p>By intelligently guiding new users through complex billing processes, the solution helps employees become productive faster, reduces training overhead, and fosters greater adoption.</p>
+        <div class="psa-impact-tag">User Adoption</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────── CONCLUSION ────────────────── -->
+<section id="conclusion">
+  <div class="container">
+    <p class="section-label">Conclusion</p>
+    <h2 class="section-title">Joule Shifts Billing from Reactive to Proactive</h2>
+    <div class="conclusion-cards">
+      <div class="concl-card improved">
+        <div class="label">What Improved</div>
+        <ul>
+          <li>Early identification of billing issues</li>
+          <li>Better prioritisation and workflow clarity</li>
+          <li>Higher usability, especially for less experienced users</li>
+          <li>Lower time pressure during triage</li>
+        </ul>
+      </div>
+      <div class="concl-card remains">
+        <div class="label">What Remains</div>
+        <ul>
+          <li>Cognitive effort still required (verification, trust)</li>
+          <li>Limited actionability and app integration</li>
+          <li>Trust is the main barrier to adoption</li>
+          <li>Billing summary and deep links still missing</li>
+        </ul>
+      </div>
+      <div class="concl-card insight">
+        <div class="label">Final Insight</div>
+        <ul>
+          <li>AI in billing today works best as a <strong>decision-support layer</strong>, not full automation</li>
+          <li>Concept received <strong>4.42 / 5 value rating</strong> at Customer Council</li>
+          <li>Builds the foundation towards an <strong>agentic ERP</strong> experience</li>
+          <li>Clear investment signal from 22 enterprise customers</li>
+        </ul>
+      </div>
+    </div>
+    <div class="final-insight">
+      AI in billing today works best as a <strong>decision-support layer</strong>, not full automation. The next step is making Joule not just a guide — but an agent that <strong>executes with oversight</strong>.
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────── FOOTER ────────────────── -->
+<footer>
+  <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:16px;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/5/59/SAP_2011_logo.svg"
+         alt="SAP" height="28" style="filter:brightness(0) invert(1) opacity(.6);"
+         onerror="this.style.display='none';" />
+  </div>
+  <p><strong>Reactive to Proactive Project Billing</strong> &nbsp;·&nbsp; Master Thesis, M.Sc. User Experience Design</p>
+  <p style="margin-top:4px;">Ritvik Kolhe &nbsp;·&nbsp; Technische Hochschule Ingolstadt &nbsp;·&nbsp; Student ID: 00161721 &nbsp;·&nbsp; June 2, 2026</p>
+  <p style="margin-top:4px;">Industry Partner: SAP SE, Business Suite UX &nbsp;·&nbsp; Supervisors: Anja Laufer, Julia Mohr, Andreas Hammerschmidt</p>
+  <p style="margin-top:12px;font-size:11px;">© 2026 SAP SE or an SAP affiliate company. All rights reserved. Research conducted in collaboration with Technische Hochschule Ingolstadt.</p>
+</footer>
+
+</body>
+</html>
