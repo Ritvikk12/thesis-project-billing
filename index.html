@@ -317,20 +317,34 @@
       font-size: 13px;
       font-weight: 600;
       position: relative;
+      border-radius: 6px;
     }
-    .process-step:not(:last-child)::after {
-      content: "";
-      position: absolute;
-      right: -16px;
-      top: 50%;
-      transform: translateY(-50%);
-      border: 18px solid transparent;
-      border-left: 16px solid var(--sap-blue);
-      z-index: 2;
-    }
+    .process-step:not(:last-child)::after { display: none; }
     .process-step:not(:first-child) { margin-left: 0; }
     .process-step.input { background: #4CA3FF; }
-    .process-step.input::after { border-left-color: #4CA3FF; }
+    .process-arrow {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 6px;
+      color: var(--sap-blue);
+      font-size: 22px;
+      font-weight: 700;
+      position: relative;
+    }
+    .process-arrow::after {
+      content: "";
+      display: block;
+      width: 28px;
+      height: 2px;
+      background: var(--sap-blue);
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .process-arrow svg { position: relative; z-index: 1; }
     .persona-card {
       display: grid;
       grid-template-columns: auto 1fr;
@@ -1066,9 +1080,13 @@
     <!-- Process flow -->
     <div class="process-flow">
       <div class="process-step input">Time Recording</div>
+      <div class="process-arrow"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9h12M11 5l4 4-4 4" stroke="#0070F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       <div class="process-step input">Expense Recording</div>
+      <div class="process-arrow"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9h12M11 5l4 4-4 4" stroke="#0070F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       <div class="process-step">Data Reviewed &amp; Adjusted</div>
+      <div class="process-arrow"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9h12M11 5l4 4-4 4" stroke="#0070F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       <div class="process-step">Billing Request Created</div>
+      <div class="process-arrow"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9h12M11 5l4 4-4 4" stroke="#0070F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       <div class="process-step">Invoice Generated &amp; Sent</div>
     </div>
 
