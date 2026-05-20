@@ -1747,170 +1747,6 @@
 
     <div class="eval-grid">
 
-      <!-- NASA TLX -->
-      <div class="eval-card">
-        <h3>Cognitive Load — NASA TLX <span style="font-size:11px;font-weight:400;">(lower = better)</span></h3>
-        <div class="chart-legend">
-          <div class="legend-item"><div class="legend-dot current"></div> Current System</div>
-          <div class="legend-item"><div class="legend-dot joule"></div> Joule Prototype</div>
-        </div>
-        <div class="bar-group">
-          <div class="bar-row">
-            <span class="bar-label">Mental Demand</span>
-            <div class="bar-track">
-              <div class="bar-fill current" style="width:21.4%"></div>
-            </div>
-            <span class="bar-val">21.4</span>
-          </div>
-          <div class="bar-row">
-            <span class="bar-label"></span>
-            <div class="bar-track">
-              <div class="bar-fill joule" style="width:27.1%"></div>
-            </div>
-            <span class="bar-val" style="color:var(--sap-negative);">27.1 ↑</span>
-          </div>
-          <div class="bar-row">
-            <span class="bar-label">Time Pressure</span>
-            <div class="bar-track">
-              <div class="bar-fill current" style="width:42.8%"></div>
-            </div>
-            <span class="bar-val">42.8</span>
-          </div>
-          <div class="bar-row">
-            <span class="bar-label"></span>
-            <div class="bar-track">
-              <div class="bar-fill joule" style="width:37.1%"></div>
-            </div>
-            <span class="bar-val" style="color:var(--sap-positive);">37.1 ↓</span>
-          </div>
-          <div class="bar-row">
-            <span class="bar-label">Effort</span>
-            <div class="bar-track">
-              <div class="bar-fill current" style="width:24.2%"></div>
-            </div>
-            <span class="bar-val">24.2</span>
-          </div>
-          <div class="bar-row">
-            <span class="bar-label"></span>
-            <div class="bar-track">
-              <div class="bar-fill joule" style="width:26.4%"></div>
-            </div>
-            <span class="bar-val">26.4</span>
-          </div>
-          <div class="bar-row">
-            <span class="bar-label">Frustration</span>
-            <div class="bar-track">
-              <div class="bar-fill current" style="width:16.4%"></div>
-            </div>
-            <span class="bar-val">16.4</span>
-          </div>
-          <div class="bar-row">
-            <span class="bar-label"></span>
-            <div class="bar-track">
-              <div class="bar-fill joule" style="width:15.7%"></div>
-            </div>
-            <span class="bar-val" style="color:var(--sap-positive);">15.7 ↓</span>
-          </div>
-        </div>
-        <p style="font-size:12px;color:var(--text-secondary);margin-top:16px;font-style:italic;">Pattern: faster triage, but more thinking/verification.</p>
-      </div>
-
-      <!-- PSAT / Satisfaction -->
-      <div class="eval-card">
-        <h3>Perceived Usability &amp; Satisfaction <span style="font-size:11px;font-weight:400;">(1–5 scale)</span></h3>
-        <div class="chart-legend">
-          <div class="legend-item"><div class="legend-dot current"></div> Current System</div>
-          <div class="legend-item"><div class="legend-dot joule"></div> Joule Prototype</div>
-        </div>
-        <div class="score-grid" style="margin-top:12px;">
-          <div class="score-item">
-            <div class="score-label">Overall Satisfaction</div>
-            <div class="score-pair">
-              <div class="score-bar-wrap">
-                <div class="score-bar current" style="height:74px;"></div>
-                <div class="score-bar-num">3.7</div>
-                <div class="score-bar-tag">Current</div>
-              </div>
-              <div class="score-bar-wrap">
-                <div class="score-bar joule" style="height:76px;"></div>
-                <div class="score-bar-num">3.8</div>
-                <div class="score-bar-tag">Joule</div>
-              </div>
-            </div>
-          </div>
-          <div class="score-item">
-            <div class="score-label">Does What I Need</div>
-            <div class="score-pair">
-              <div class="score-bar-wrap">
-                <div class="score-bar current" style="height:76px;"></div>
-                <div class="score-bar-num">3.8</div>
-                <div class="score-bar-tag">Current</div>
-              </div>
-              <div class="score-bar-wrap">
-                <div class="score-bar joule" style="height:70px;"></div>
-                <div class="score-bar-num">3.5</div>
-                <div class="score-bar-tag">Joule</div>
-              </div>
-            </div>
-          </div>
-          <div class="score-item">
-            <div class="score-label">Easy to Use</div>
-            <div class="score-pair">
-              <div class="score-bar-wrap">
-                <div class="score-bar current" style="height:70px;"></div>
-                <div class="score-bar-num">3.5</div>
-                <div class="score-bar-tag">Current</div>
-              </div>
-              <div class="score-bar-wrap">
-                <div class="score-bar joule" style="height:74px;"></div>
-                <div class="score-bar-num">3.7</div>
-                <div class="score-bar-tag">Joule</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <p style="font-size:12px;color:var(--text-secondary);margin-top:20px;">Joule scored higher on ease-of-use and satisfaction; current system led on "does what I need" due to missing billing summary and unclear actions.</p>
-      </div>
-
-      <!-- Business Sentiment -->
-      <div class="eval-card">
-        <h3>Customer Council Sentiment <span style="font-size:11px;font-weight:400;">(N=21, 1–5 scale)</span></h3>
-        <div class="sentiment-grid" style="margin-top:8px;">
-          <div class="sentiment-item">
-            <div class="q">Value for improving billing efficiency &amp; reducing errors</div>
-            <div class="score-row">
-              <div class="sentiment-track"><div class="sentiment-fill" style="width:88.4%"></div></div>
-              <div class="sentiment-score">4.42</div>
-            </div>
-          </div>
-          <div class="sentiment-item">
-            <div class="q">Investment opportunity for SAP and customers</div>
-            <div class="score-row">
-              <div class="sentiment-track"><div class="sentiment-fill" style="width:82.8%"></div></div>
-              <div class="sentiment-score">4.14</div>
-            </div>
-          </div>
-          <div class="sentiment-item">
-            <div class="q">Comfort with AI guiding billing decisions</div>
-            <div class="score-row">
-              <div class="sentiment-track"><div class="sentiment-fill" style="width:80%"></div></div>
-              <div class="sentiment-score">4.00</div>
-            </div>
-          </div>
-          <div class="sentiment-item">
-            <div class="q">Likelihood of company adoption</div>
-            <div class="score-row">
-              <div class="sentiment-track"><div class="sentiment-fill" style="width:78%"></div></div>
-              <div class="sentiment-score">3.90</div>
-            </div>
-          </div>
-        </div>
-        <div style="margin-top:20px;padding:14px;background:var(--bg-page);border-radius:8px;">
-          <p style="font-size:12px;font-style:italic;color:var(--text-secondary);margin-bottom:6px;">"Billing is too complex, guiding &amp; prompting potential issues sooner is better"</p>
-          <p style="font-size:12px;font-style:italic;color:var(--text-secondary);">"This solution would give the chance to distribute responsibility in the future"</p>
-        </div>
-      </div>
-
       <!-- UEQ-S -->
       <div class="eval-card" style="grid-column:1/-1;">
         <h3>User Experience Quality — UEQ-S <span style="font-size:11px;font-weight:400;">(scale −3 to +3)</span></h3>
@@ -2027,6 +1863,171 @@
           <p style="font-size:12px;color:var(--text-primary);margin:0;"><strong>Key Insight:</strong> Hedonic quality gains outpaced pragmatic gains, Joule's improvement is primarily experiential. Users find the AI-driven interface more enjoyable and engaging, even as task-completion efficiency continues to mature.</p>
         </div>
       </div>
+
+      <!-- NASA TLX -->
+      <div class="eval-card">
+        <h3>Cognitive Load — NASA TLX <span style="font-size:11px;font-weight:400;">(lower = better)</span></h3>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-dot current"></div> Current System</div>
+          <div class="legend-item"><div class="legend-dot joule"></div> Joule Prototype</div>
+        </div>
+        <div class="bar-group">
+          <div class="bar-row">
+            <span class="bar-label">Mental Demand</span>
+            <div class="bar-track">
+              <div class="bar-fill current" style="width:21.4%"></div>
+            </div>
+            <span class="bar-val">21.4</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label"></span>
+            <div class="bar-track">
+              <div class="bar-fill joule" style="width:27.1%"></div>
+            </div>
+            <span class="bar-val" style="display:flex;align-items:center;gap:4px;width:auto;">27.1<span style="font-size:10px;font-weight:700;color:#fff;background:var(--sap-negative);padding:1px 5px;border-radius:10px;line-height:1.4;">↑</span></span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">Time Pressure</span>
+            <div class="bar-track">
+              <div class="bar-fill current" style="width:42.8%"></div>
+            </div>
+            <span class="bar-val">42.8</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label"></span>
+            <div class="bar-track">
+              <div class="bar-fill joule" style="width:37.1%"></div>
+            </div>
+            <span class="bar-val" style="display:flex;align-items:center;gap:4px;width:auto;">37.1<span style="font-size:10px;font-weight:700;color:#fff;background:var(--sap-positive);padding:1px 5px;border-radius:10px;line-height:1.4;">↓</span></span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">Effort</span>
+            <div class="bar-track">
+              <div class="bar-fill current" style="width:24.2%"></div>
+            </div>
+            <span class="bar-val">24.2</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label"></span>
+            <div class="bar-track">
+              <div class="bar-fill joule" style="width:26.4%"></div>
+            </div>
+            <span class="bar-val" style="display:flex;align-items:center;gap:4px;width:auto;">26.4<span style="font-size:10px;font-weight:700;color:#fff;background:var(--sap-negative);padding:1px 5px;border-radius:10px;line-height:1.4;">↑</span></span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">Frustration</span>
+            <div class="bar-track">
+              <div class="bar-fill current" style="width:16.4%"></div>
+            </div>
+            <span class="bar-val">16.4</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label"></span>
+            <div class="bar-track">
+              <div class="bar-fill joule" style="width:15.7%"></div>
+            </div>
+            <span class="bar-val" style="display:flex;align-items:center;gap:4px;width:auto;">15.7<span style="font-size:10px;font-weight:700;color:#fff;background:var(--sap-positive);padding:1px 5px;border-radius:10px;line-height:1.4;">↓</span></span>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--text-secondary);margin-top:16px;font-style:italic;">Pattern: faster triage, but more thinking/verification.</p>
+      </div>
+
+      <!-- PSAT / Satisfaction -->
+      <div class="eval-card">
+        <h3>Perceived Usability &amp; Satisfaction <span style="font-size:11px;font-weight:400;">(1–5 scale)</span></h3>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-dot current"></div> Current System</div>
+          <div class="legend-item"><div class="legend-dot joule"></div> Joule Prototype</div>
+        </div>
+        <div class="score-grid" style="margin-top:12px;">
+          <div class="score-item">
+            <div class="score-label">Overall Satisfaction</div>
+            <div class="score-pair">
+              <div class="score-bar-wrap">
+                <div class="score-bar current" style="height:74px;"></div>
+                <div class="score-bar-num">3.7</div>
+                <div class="score-bar-tag">Current</div>
+              </div>
+              <div class="score-bar-wrap">
+                <div class="score-bar joule" style="height:76px;"></div>
+                <div class="score-bar-num">3.8</div>
+                <div class="score-bar-tag">Joule</div>
+              </div>
+            </div>
+          </div>
+          <div class="score-item">
+            <div class="score-label">Does What I Need</div>
+            <div class="score-pair">
+              <div class="score-bar-wrap">
+                <div class="score-bar current" style="height:76px;"></div>
+                <div class="score-bar-num">3.8</div>
+                <div class="score-bar-tag">Current</div>
+              </div>
+              <div class="score-bar-wrap">
+                <div class="score-bar joule" style="height:70px;"></div>
+                <div class="score-bar-num">3.5</div>
+                <div class="score-bar-tag">Joule</div>
+              </div>
+            </div>
+          </div>
+          <div class="score-item">
+            <div class="score-label">Easy to Use</div>
+            <div class="score-pair">
+              <div class="score-bar-wrap">
+                <div class="score-bar current" style="height:70px;"></div>
+                <div class="score-bar-num">3.5</div>
+                <div class="score-bar-tag">Current</div>
+              </div>
+              <div class="score-bar-wrap">
+                <div class="score-bar joule" style="height:74px;"></div>
+                <div class="score-bar-num">3.7</div>
+                <div class="score-bar-tag">Joule</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--text-secondary);margin-top:20px;">Joule scored higher on ease-of-use and satisfaction; current system led on "does what I need" due to missing billing summary and unclear actions.</p>
+      </div>
+
+      <!-- Business Sentiment -->
+      <div class="eval-card">
+        <h3>Customer Council Sentiment <span style="font-size:11px;font-weight:400;">(N=21, 1–5 scale)</span></h3>
+        <div class="sentiment-grid" style="margin-top:8px;">
+          <div class="sentiment-item">
+            <div class="q">Value for improving billing efficiency &amp; reducing errors</div>
+            <div class="score-row">
+              <div class="sentiment-track"><div class="sentiment-fill" style="width:88.4%"></div></div>
+              <div class="sentiment-score">4.42</div>
+            </div>
+          </div>
+          <div class="sentiment-item">
+            <div class="q">Investment opportunity for SAP and customers</div>
+            <div class="score-row">
+              <div class="sentiment-track"><div class="sentiment-fill" style="width:82.8%"></div></div>
+              <div class="sentiment-score">4.14</div>
+            </div>
+          </div>
+          <div class="sentiment-item">
+            <div class="q">Comfort with AI guiding billing decisions</div>
+            <div class="score-row">
+              <div class="sentiment-track"><div class="sentiment-fill" style="width:80%"></div></div>
+              <div class="sentiment-score">4.00</div>
+            </div>
+          </div>
+          <div class="sentiment-item">
+            <div class="q">Likelihood of company adoption</div>
+            <div class="score-row">
+              <div class="sentiment-track"><div class="sentiment-fill" style="width:78%"></div></div>
+              <div class="sentiment-score">3.90</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:20px;padding:14px;background:var(--bg-page);border-radius:8px;">
+          <p style="font-size:12px;font-style:italic;color:var(--text-secondary);margin-bottom:6px;">"Billing is too complex, guiding &amp; prompting potential issues sooner is better"</p>
+          <p style="font-size:12px;font-style:italic;color:var(--text-secondary);">"This solution would give the chance to distribute responsibility in the future"</p>
+        </div>
+      </div>
+
 
     </div>
   </div>
