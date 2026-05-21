@@ -1629,7 +1629,7 @@
     </p>
 
     <div class="wf-diagram-wrap" style="padding:24px 0 24px;">
-      <svg viewBox="0 0 880 148" xmlns="http://www.w3.org/2000/svg"
+      <svg viewBox="0 0 1060 188" xmlns="http://www.w3.org/2000/svg"
            style="font-family:'72',Arial,sans-serif;width:100%;display:block;">
         <defs>
           <marker id="wf-red" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
@@ -1637,61 +1637,63 @@
           </marker>
         </defs>
 
-        <!-- ── LEGEND ── -->
-        <line x1="0" y1="12" x2="18" y2="12" stroke="#8FA3BA" stroke-width="2.5"/>
-        <circle cx="9" cy="12" r="4" fill="#8FA3BA" stroke="white" stroke-width="1.5"/>
-        <text x="24" y="16" font-size="10.5" font-weight="600" fill="#8FA3BA">Current Workflow</text>
-        <line x1="185" y1="12" x2="203" y2="12" stroke="#0070F2" stroke-width="2.5"/>
-        <circle cx="194" cy="12" r="4" fill="#0070F2" stroke="white" stroke-width="1.5"/>
-        <text x="209" y="16" font-size="10.5" font-weight="600" fill="#0070F2">Proposed · Joule Workflow</text>
+        <!-- ── REWORK ARC (high curve, step 4 x=695 → step 2 x=345) ── -->
+        <path d="M 695,72 C 695,4 345,4 345,72"
+              stroke="#B00020" stroke-width="2" fill="none"
+              stroke-dasharray="6,3" marker-end="url(#wf-red)"/>
+        <text x="718" y="52" font-size="10" fill="#B00020" font-weight="600">Rejected</text>
+        <text x="520" y="17" text-anchor="middle" font-size="10" fill="#B00020" font-weight="600">⟳  Resolve &amp; Re-Edit</text>
+        <text x="328" y="52" font-size="10" fill="#B00020" text-anchor="end">Re-Edit Data</text>
 
-        <!-- ── REWORK ARC (arcs above lines, step 4 → step 2) ── -->
-        <path d="M 600,58 C 600,14 250,14 250,58"
-              stroke="#B00020" stroke-width="1.8" fill="none"
-              stroke-dasharray="5,3" marker-end="url(#wf-red)"/>
-        <text x="622" y="44" font-size="9.5" fill="#B00020" font-weight="600">Rejected</text>
-        <text x="425" y="16" text-anchor="middle" font-size="9.5" fill="#B00020" font-weight="600">⟳  Resolve &amp; Re-Edit</text>
-        <text x="234" y="44" font-size="9.5" fill="#B00020" text-anchor="end">Re-Edit Data</text>
+        <!-- ── CURRENT LINE (gray, y=72) ── -->
+        <line x1="170" y1="72" x2="870" y2="72" stroke="#8FA3BA" stroke-width="3"/>
+        <circle cx="170" cy="72" r="8" fill="#8FA3BA" stroke="white" stroke-width="2.5"/>
+        <circle cx="345" cy="72" r="8" fill="#8FA3BA" stroke="white" stroke-width="2.5"/>
+        <circle cx="520" cy="72" r="8" fill="#8FA3BA" stroke="white" stroke-width="2.5"/>
+        <circle cx="695" cy="72" r="8" fill="#8FA3BA" stroke="white" stroke-width="2.5"/>
+        <circle cx="870" cy="72" r="8" fill="#8FA3BA" stroke="white" stroke-width="2.5"/>
 
-        <!-- ── CURRENT LINE (gray, y=58) ── -->
-        <line x1="75" y1="58" x2="780" y2="58" stroke="#8FA3BA" stroke-width="2.5"/>
-        <circle cx="75"  cy="58" r="7" fill="#8FA3BA" stroke="white" stroke-width="2.5"/>
-        <circle cx="250" cy="58" r="7" fill="#8FA3BA" stroke="white" stroke-width="2.5"/>
-        <circle cx="425" cy="58" r="7" fill="#8FA3BA" stroke="white" stroke-width="2.5"/>
-        <circle cx="600" cy="58" r="7" fill="#8FA3BA" stroke="white" stroke-width="2.5"/>
-        <circle cx="780" cy="58" r="7" fill="#8FA3BA" stroke="white" stroke-width="2.5"/>
+        <!-- ── JOULE LINE (blue, y=96) ── -->
+        <line x1="170" y1="96" x2="870" y2="96" stroke="#0070F2" stroke-width="3"/>
+        <circle cx="170" cy="96" r="8" fill="#0070F2" stroke="white" stroke-width="2.5"/>
+        <circle cx="345" cy="96" r="8" fill="#0070F2" stroke="white" stroke-width="2.5"/>
+        <circle cx="520" cy="96" r="8" fill="#0070F2" stroke="white" stroke-width="2.5"/>
+        <circle cx="695" cy="96" r="8" fill="#0070F2" stroke="white" stroke-width="2.5"/>
+        <circle cx="870" cy="96" r="8" fill="#0070F2" stroke="white" stroke-width="2.5"/>
 
-        <!-- ── JOULE LINE (blue, y=78) ── -->
-        <line x1="75" y1="78" x2="780" y2="78" stroke="#0070F2" stroke-width="2.5"/>
-        <circle cx="75"  cy="78" r="7" fill="#0070F2" stroke="white" stroke-width="2.5"/>
-        <circle cx="250" cy="78" r="7" fill="#0070F2" stroke="white" stroke-width="2.5"/>
-        <circle cx="425" cy="78" r="7" fill="#0070F2" stroke="white" stroke-width="2.5"/>
-        <circle cx="600" cy="78" r="7" fill="#0070F2" stroke="white" stroke-width="2.5"/>
-        <circle cx="780" cy="78" r="7" fill="#0070F2" stroke="white" stroke-width="2.5"/>
+        <!-- ── TICK LINES ── -->
+        <line x1="170" y1="106" x2="170" y2="118" stroke="#D0D7E0" stroke-width="1"/>
+        <line x1="345" y1="106" x2="345" y2="118" stroke="#D0D7E0" stroke-width="1"/>
+        <line x1="520" y1="106" x2="520" y2="118" stroke="#D0D7E0" stroke-width="1"/>
+        <line x1="695" y1="106" x2="695" y2="118" stroke="#D0D7E0" stroke-width="1"/>
+        <line x1="870" y1="106" x2="870" y2="118" stroke="#D0D7E0" stroke-width="1"/>
 
-        <!-- ── TICK LINES (bottom of joule circles → labels) ── -->
-        <line x1="75"  y1="86" x2="75"  y2="96" stroke="#D0D7E0" stroke-width="1"/>
-        <line x1="250" y1="86" x2="250" y2="96" stroke="#D0D7E0" stroke-width="1"/>
-        <line x1="425" y1="86" x2="425" y2="96" stroke="#D0D7E0" stroke-width="1"/>
-        <line x1="600" y1="86" x2="600" y2="96" stroke="#D0D7E0" stroke-width="1"/>
-        <line x1="780" y1="86" x2="780" y2="96" stroke="#D0D7E0" stroke-width="1"/>
+        <!-- ── STEP NAMES ── -->
+        <text x="170" y="132" text-anchor="middle" font-size="12" font-weight="700" fill="#1D2D3E">Check Billing Data</text>
+        <text x="170" y="146" text-anchor="middle" font-size="9.5" fill="#8FA3BA">Review billing items</text>
 
-        <!-- ── STEP LABELS + DESCRIPTIONS (below lines) ── -->
-        <text x="75"  y="108" text-anchor="middle" font-size="11" font-weight="700" fill="#1D2D3E">Check Billing Data</text>
-        <text x="75"  y="120" text-anchor="middle" font-size="9"  fill="#8FA3BA">Review billing items</text>
-        <text x="75"  y="133" text-anchor="middle" font-size="9.5" fill="#0070F2" font-weight="600">⚡ Issues flagged here</text>
+        <text x="345" y="132" text-anchor="middle" font-size="12" font-weight="700" fill="#1D2D3E">Edit Billing Data</text>
+        <text x="345" y="146" text-anchor="middle" font-size="9.5" fill="#8FA3BA">Correct, postpone, write-off</text>
 
-        <text x="250" y="108" text-anchor="middle" font-size="11" font-weight="700" fill="#1D2D3E">Edit Billing Data</text>
-        <text x="250" y="120" text-anchor="middle" font-size="9"  fill="#8FA3BA">Correct, postpone, write-off</text>
+        <text x="520" y="132" text-anchor="middle" font-size="12" font-weight="700" fill="#1D2D3E">Submit BDR</text>
+        <text x="520" y="146" text-anchor="middle" font-size="9.5" fill="#8FA3BA">Create billing request</text>
 
-        <text x="425" y="108" text-anchor="middle" font-size="11" font-weight="700" fill="#1D2D3E">Submit BDR</text>
-        <text x="425" y="120" text-anchor="middle" font-size="9"  fill="#8FA3BA">Create billing request</text>
+        <text x="695" y="132" text-anchor="middle" font-size="12" font-weight="700" fill="#1D2D3E">Clerk Reviews BDR</text>
+        <text x="695" y="146" text-anchor="middle" font-size="9.5" fill="#8FA3BA">Validate &amp; approve</text>
 
-        <text x="600" y="108" text-anchor="middle" font-size="11" font-weight="700" fill="#1D2D3E">Clerk Reviews BDR</text>
-        <text x="600" y="120" text-anchor="middle" font-size="9"  fill="#8FA3BA">Validate &amp; approve</text>
+        <text x="870" y="132" text-anchor="middle" font-size="12" font-weight="700" fill="#1D2D3E">Invoice Generated</text>
+        <text x="870" y="146" text-anchor="middle" font-size="9.5" fill="#8FA3BA">Send to customer</text>
 
-        <text x="780" y="108" text-anchor="middle" font-size="11" font-weight="700" fill="#1D2D3E">Invoice Generated</text>
-        <text x="780" y="120" text-anchor="middle" font-size="9"  fill="#8FA3BA">Send to customer</text>
+        <!-- ── WORKFLOW LABELS (below step names, left-anchored) ── -->
+        <!-- Current row label -->
+        <circle cx="8"  cy="72" r="5" fill="#8FA3BA" stroke="white" stroke-width="1.5"/>
+        <text x="19" y="76" font-size="10" font-weight="600" fill="#8FA3BA">Current Workflow</text>
+        <!-- Joule row label -->
+        <circle cx="8"  cy="96" r="5" fill="#0070F2" stroke="white" stroke-width="1.5"/>
+        <text x="19" y="100" font-size="10" font-weight="600" fill="#0070F2">Proposed · Joule Workflow</text>
+
+        <!-- ── ⚡ JOULE INDICATOR ── -->
+        <text x="170" y="162" text-anchor="middle" font-size="10" fill="#0070F2" font-weight="600">⚡ Issues flagged here</text>
 
       </svg>
     </div>
