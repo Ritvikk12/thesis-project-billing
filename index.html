@@ -932,6 +932,40 @@
 </head>
 <body>
 
+<!-- Custom cursor -->
+<div id="custom-cursor"></div>
+<style>
+  * { cursor: none !important; }
+  #custom-cursor {
+    position: fixed;
+    top: 0; left: 0;
+    width: 28px; height: 28px;
+    border: 2px solid var(--sap-blue, #0070F2);
+    border-radius: 50%;
+    background: rgba(0, 112, 242, 0.12);
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    transition: transform 0.08s ease, width 0.15s ease, height 0.15s ease, background 0.15s ease;
+    z-index: 99999;
+    mix-blend-mode: normal;
+  }
+  #custom-cursor.clicking {
+    width: 18px; height: 18px;
+    background: rgba(0, 112, 242, 0.3);
+  }
+</style>
+<script>
+  (function () {
+    var c = document.getElementById('custom-cursor');
+    document.addEventListener('mousemove', function (e) {
+      c.style.left = e.clientX + 'px';
+      c.style.top  = e.clientY + 'px';
+    });
+    document.addEventListener('mousedown', function () { c.classList.add('clicking'); });
+    document.addEventListener('mouseup',   function () { c.classList.remove('clicking'); });
+  })();
+</script>
+
 <!-- ────────────────── NAV ────────────────── -->
 <nav>
   <div class="nav-brand">
