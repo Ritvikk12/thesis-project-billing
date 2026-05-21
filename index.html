@@ -2201,5 +2201,129 @@
   })();
 </script>
 
+<!-- ── Notion-style right section nav ── -->
+<style>
+  #section-nav {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 9000;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+  .sn-item {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .sn-label {
+    opacity: 0;
+    transform: translateX(8px);
+    transition: opacity .2s ease, transform .2s ease;
+    font-size: 12px;
+    font-weight: 500;
+    color: #1D2D3E;
+    background: rgba(255,255,255,0.92);
+    border: 1px solid rgba(0,0,0,0.08);
+    padding: 3px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    pointer-events: none;
+    backdrop-filter: blur(6px);
+  }
+  .dark-mode .sn-label {
+    color: #e8edf2;
+    background: rgba(30,40,55,0.92);
+    border-color: rgba(255,255,255,0.10);
+  }
+  .sn-dot {
+    width: 28px;
+    height: 3px;
+    border-radius: 3px;
+    background: rgba(100,120,140,0.35);
+    transition: background .2s ease, width .2s ease;
+    flex-shrink: 0;
+  }
+  .sn-item:hover .sn-dot,
+  .sn-item.active .sn-dot {
+    background: var(--sap-blue, #0070F2);
+    width: 28px;
+  }
+  .sn-item.active .sn-dot {
+    width: 22px;
+    background: var(--sap-blue, #0070F2);
+  }
+  .sn-item:hover .sn-label {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+  @media (max-width: 900px) { #section-nav { display: none; } }
+</style>
+
+<nav id="section-nav"></nav>
+
+<script>
+  (function () {
+    const sections = [
+      { id: 'hero',                label: 'Introduction' },
+      { id: 'context',             label: 'What Is Project Billing?' },
+      { id: 'pain',                label: 'Pain Points' },
+      { id: 'research',            label: 'Design Process' },
+      { id: 'workflow-comparison', label: 'Billing Workflow' },
+      { id: 'concept',             label: 'Joule Concept' },
+      { id: 'demo',                label: 'Prototype Demo' },
+      { id: 'evaluation',          label: 'Quantitative Analysis' },
+      { id: 'findings',            label: 'Research Findings' },
+      { id: 'synthesis',           label: 'Synthesis' },
+      { id: 'hypotheses',          label: 'Hypotheses Validation' },
+      { id: 'refined-demo',        label: 'Refined Concept' },
+      { id: 'limitations',         label: 'Limitations' },
+      { id: 'future',              label: 'Future Work' },
+      { id: 'psa-impact',          label: 'PSA Impact' },
+      { id: 'conclusion',          label: 'Conclusion' },
+    ];
+
+    const nav = document.getElementById('section-nav');
+
+    sections.forEach(({ id, label }) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const a = document.createElement('a');
+      a.className = 'sn-item';
+      a.href = '#' + id;
+      a.innerHTML = `<span class="sn-label">${label}</span><span class="sn-dot"></span>`;
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      nav.appendChild(a);
+    });
+
+    // Highlight active section on scroll
+    const items = Array.from(nav.querySelectorAll('.sn-item'));
+    const targets = sections.map(s => document.getElementById(s.id)).filter(Boolean);
+
+    function onScroll() {
+      const scrollY = window.scrollY + window.innerHeight * 0.3;
+      let active = targets[0];
+      targets.forEach(t => { if (t && t.offsetTop <= scrollY) active = t; });
+      items.forEach(i => {
+        i.classList.toggle('active', i.getAttribute('href') === '#' + (active && active.id));
+      });
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  })();
+</script>
+
 </body>
 </html>
