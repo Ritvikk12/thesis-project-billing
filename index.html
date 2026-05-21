@@ -73,20 +73,20 @@
     .theme-toggle {
       background: rgba(255,255,255,.1);
       border: 1px solid rgba(255,255,255,.2);
-      border-radius: 20px;
-      padding: 5px 12px;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      padding: 0;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 6px;
+      justify-content: center;
       color: rgba(255,255,255,.85);
-      font-size: 12px;
-      font-weight: 600;
       transition: background .2s, border-color .2s;
-      white-space: nowrap;
+      flex-shrink: 0;
     }
     .theme-toggle:hover { background: rgba(255,255,255,.18); border-color: rgba(255,255,255,.35); }
-    .theme-toggle .toggle-icon { font-size: 14px; }
+    .theme-toggle .toggle-icon { font-size: 18px; line-height: 1; }
 
     /* ── Reset & base ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -981,21 +981,8 @@
     </span>
     Reactive to Proactive Project Billing in SAP Public Cloud ERP for Professional Services
   </div>
-  <ul class="nav-links">
-    <li><a href="#context">Context</a></li>
-    <li><a href="#pain">Pain Points</a></li>
-    <li><a href="#concept">Concept</a></li>
-    <li><a href="#workflow-comparison">Workflow</a></li>
-    <li><a href="#demo">Demo</a></li>
-    <li><a href="#refined-demo">Refined Prototype</a></li>
-    <li><a href="#evaluation">Results</a></li>
-    <li><a href="#findings">Key Findings</a></li>
-    <li><a href="#psa-impact">PSA Impact</a></li>
-    <li><a href="#conclusion">Conclusion</a></li>
-  </ul>
   <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
     <span class="toggle-icon">🌙</span>
-    <span id="toggleLabel">Dark</span>
   </button>
 </nav>
 
@@ -2211,7 +2198,6 @@
 <script>
   function toggleTheme() {
     const isDark = document.body.classList.toggle('dark-mode');
-    document.getElementById('toggleLabel').textContent = isDark ? 'Light' : 'Dark';
     document.querySelector('.theme-toggle .toggle-icon').textContent = isDark ? '☀️' : '🌙';
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
   }
@@ -2221,7 +2207,6 @@
     const saved = localStorage.getItem('theme');
     if (saved === 'dark') {
       document.body.classList.add('dark-mode');
-      document.getElementById('toggleLabel').textContent = 'Light';
       document.querySelector('.theme-toggle .toggle-icon').textContent = '☀️';
     }
   })();
