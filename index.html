@@ -2206,12 +2206,13 @@
   #section-nav {
     position: fixed;
     right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
+    top: 0;
+    height: 100vh;
     z-index: 9000;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
+    justify-content: center;
     gap: 6px;
   }
   .sn-item {
@@ -2268,7 +2269,7 @@
   @media (max-width: 900px) { #section-nav { display: none; } }
 </style>
 
-<nav id="section-nav"></nav>
+<div id="section-nav"></div>
 
 <script>
   (function () {
