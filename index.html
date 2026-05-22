@@ -91,33 +91,6 @@
     }
     .nav-links a:hover { color: #fff; text-decoration: none; }
 
-    .nav-contact {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 0 16px;
-      height: 32px;
-      background: transparent;
-      border: 1px solid rgba(255,255,255,.45);
-      border-radius: 4px;
-      color: #fff;
-      font-size: 13px;
-      font-weight: 500;
-      font-family: inherit;
-      text-decoration: none;
-      cursor: pointer;
-      transition: background .15s, border-color .15s;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    .nav-contact:hover {
-      background: rgba(255,255,255,.12);
-      border-color: rgba(255,255,255,.7);
-      text-decoration: none;
-      color: #fff;
-    }
-    .nav-contact svg { flex-shrink: 0; }
-
     /* ── Section wrappers ── */
     section { padding: 80px 48px; }
     .container { max-width: 1180px; margin: 0 auto; }
@@ -902,6 +875,39 @@
 </head>
 <body>
 
+<!-- Custom cursor -->
+<div id="custom-cursor"></div>
+<style>
+  * { cursor: none !important; }
+  #custom-cursor {
+    position: fixed;
+    top: 0; left: 0;
+    width: 28px; height: 28px;
+    border: 2px solid var(--sap-blue, #0070F2);
+    border-radius: 50%;
+    background: rgba(0, 112, 242, 0.12);
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    transition: transform 0.08s ease, width 0.15s ease, height 0.15s ease, background 0.15s ease;
+    z-index: 99999;
+  }
+  #custom-cursor.clicking {
+    width: 18px; height: 18px;
+    background: rgba(0, 112, 242, 0.3);
+  }
+</style>
+<script>
+  (function () {
+    var c = document.getElementById('custom-cursor');
+    document.addEventListener('mousemove', function (e) {
+      c.style.left = e.clientX + 'px';
+      c.style.top  = e.clientY + 'px';
+    });
+    document.addEventListener('mousedown', function () { c.classList.add('clicking'); });
+    document.addEventListener('mouseup',   function () { c.classList.remove('clicking'); });
+  })();
+</script>
+
 <nav>
   <div class="nav-brand">
     <span class="sap-logo">
@@ -917,13 +923,6 @@
     </span>
     Reactive to Proactive Project Billing in SAP Public Cloud ERP for Professional Services
   </div>
-  <a class="nav-contact" href="mailto:ritvik.kolhe@sap.com">
-    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M14 3H2a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1Z" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round"/>
-      <path d="M1 4.5l7 4.5 7-4.5" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    Contact
-  </a>
 </nav>
 
 <!-- ────────────────── DISCLAIMER STRIP ────────────────── -->
