@@ -945,7 +945,8 @@
 
 <!-- ────────────────── HERO ────────────────── -->
 <section id="hero">
-  <div class="container">
+  <canvas id="hero-ripple" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
+  <div class="container" style="position:relative;z-index:1;">
     <div class="hero-badge">
       ✦ &nbsp; Master Thesis &nbsp;·&nbsp; SAP × TH Ingolstadt
     </div>
@@ -2122,6 +2123,77 @@
   <p style="margin-top:4px;">Industry Partner: SAP SE, Business Suite UX &nbsp;·&nbsp; Supervisors: Anja Laufer, Julia Mohr, Andreas Hammerschmidt</p>
   <p style="margin-top:12px;font-size:11px;">© 2026 SAP SE or an SAP affiliate company. All rights reserved. Research conducted in collaboration with Technische Hochschule Ingolstadt.</p>
 </footer>
+
+<!-- ── Hero water ripple ── -->
+<script>
+  (function () {
+    var hero   = document.getElementById('hero');
+    var canvas = document.getElementById('hero-ripple');
+    var ctx    = canvas.getContext('2d');
+    var ripples = [];
+
+    function resize() {
+      canvas.width  = hero.offsetWidth;
+      canvas.height = hero.offsetHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    hero.addEventListener('click', function (e) {
+      var rect = hero.getBoundingClientRect();
+      ripples.push({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+        r: 0,
+        maxR: Math.max(canvas.width, canvas.height) * 0.55,
+        alpha: 0.55,
+        rings: [0, 0.28, 0.56]   /* staggered inner rings at % of maxR */
+      });
+    });
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ripples = ripples.filter(function (rip) { return rip.alpha > 0.005; });
+
+      ripples.forEach(function (rip) {
+        rip.r     += (rip.maxR - rip.r) * 0.045;
+        rip.alpha *= 0.962;
+
+        rip.rings.forEach(function (offset) {
+          var r = rip.r * (1 - offset);
+          if (r < 2) return;
+
+          /* glow layer */
+          ctx.beginPath();
+          ctx.arc(rip.x, rip.y, r, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(255,255,255,' + (rip.alpha * 0.18) + ')';
+          ctx.lineWidth = 10;
+          ctx.stroke();
+
+          /* sharp ring */
+          ctx.beginPath();
+          ctx.arc(rip.x, rip.y, r, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(255,255,255,' + rip.alpha + ')';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        });
+
+        /* centre splash dot */
+        if (rip.r < rip.maxR * 0.15) {
+          var dotAlpha = rip.alpha * (1 - rip.r / (rip.maxR * 0.15));
+          ctx.beginPath();
+          ctx.arc(rip.x, rip.y, 4, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255,255,255,' + dotAlpha + ')';
+          ctx.fill();
+        }
+      });
+
+      requestAnimationFrame(draw);
+    }
+    draw();
+  })();
+</script>
 
 <!-- ── Notion-style right section nav ── -->
 <style>
