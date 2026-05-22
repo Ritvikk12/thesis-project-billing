@@ -30,65 +30,6 @@
       --radius-sm:         8px;
     }
 
-    /* ── Dark mode tokens ── */
-    body.dark-mode {
-      --bg-page:           #0f1117;
-      --bg-card:           #1a1d27;
-      --text-primary:      #E8EDF2;
-      --text-secondary:    #8FA3BA;
-      --border:            #2E3A4A;
-      --shadow-card:       0 2px 8px rgba(0,0,0,.4), 0 0 2px rgba(0,0,0,.3);
-      --shadow-hover:      0 6px 20px rgba(0,0,0,.5), 0 1px 4px rgba(0,0,0,.4);
-    }
-
-    /* ── Dark mode section overrides ── */
-    body.dark-mode #executive,
-    body.dark-mode #concept,
-    body.dark-mode #future,
-    body.dark-mode #hypotheses { background: #13161f; }
-    body.dark-mode #workflow-comparison { background: #13161f; }
-    body.dark-mode #context,
-    body.dark-mode #research,
-    body.dark-mode #limitations { background: #0f1117; }
-    body.dark-mode .exec-card,
-    body.dark-mode .hcd-card,
-    body.dark-mode .future-card,
-    body.dark-mode .eval-card,
-    body.dark-mode .limit-item,
-    body.dark-mode .finding-card,
-    body.dark-mode .persona-card { background: #1a1d27; border-color: #2E3A4A; }
-    body.dark-mode .future-card:hover { background: #1a2a3d; }
-    body.dark-mode .exec-card h3,
-    body.dark-mode .hcd-card h3,
-    body.dark-mode .finding-card h3,
-    body.dark-mode .limit-item h4 { color: var(--text-primary); }
-    body.dark-mode .joule-mockup { background: #1a1d27; border-color: #2E3A4A; }
-    body.dark-mode .score-item .score-label { color: var(--text-secondary); }
-    body.dark-mode .psa-intro-card,
-    body.dark-mode .psa-impact-card { background: #1a1d27; }
-    body.dark-mode .psa-impact-num { background: #0f2a4a; color: var(--sap-accent); }
-    body.dark-mode .hyp-card { background: #1a1d27; border-color: #2E3A4A; }
-    body.dark-mode .hyp-card p,
-    body.dark-mode .hyp-card h3 { color: var(--text-primary); }
-
-    /* ── Theme toggle button ── */
-    .theme-toggle {
-      background: rgba(255,255,255,.1);
-      border: 1px solid rgba(255,255,255,.2);
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      padding: 0;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: rgba(255,255,255,.85);
-      transition: background .2s, border-color .2s;
-      flex-shrink: 0;
-    }
-    .theme-toggle:hover { background: rgba(255,255,255,.18); border-color: rgba(255,255,255,.35); }
-    .theme-toggle .toggle-icon { font-size: 18px; line-height: 1; }
 
     /* ── Reset & base ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -983,9 +924,6 @@
     </span>
     Reactive to Proactive Project Billing in SAP Public Cloud ERP for Professional Services
   </div>
-  <button class="theme-toggle" id="themeToggle">
-    <span class="toggle-icon">💡</span>
-  </button>
 </nav>
 
 <!-- ────────────────── DISCLAIMER STRIP ────────────────── -->
@@ -2186,32 +2124,6 @@
   <p style="margin-top:12px;font-size:11px;">© 2026 SAP SE or an SAP affiliate company. All rights reserved. Research conducted in collaboration with Technische Hochschule Ingolstadt.</p>
 </footer>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    var btn  = document.getElementById('themeToggle');
-    var icon = btn.querySelector('.toggle-icon');
-
-    function applyTheme(dark) {
-      if (dark) {
-        document.body.classList.add('dark-mode');
-        icon.textContent = '🌑';
-      } else {
-        document.body.classList.remove('dark-mode');
-        icon.textContent = '💡';
-      }
-      localStorage.setItem('theme', dark ? 'dark' : 'light');
-    }
-
-    // Restore saved preference
-    applyTheme(localStorage.getItem('theme') === 'dark');
-
-    // Toggle on click
-    btn.addEventListener('click', function () {
-      applyTheme(!document.body.classList.contains('dark-mode'));
-    });
-  });
-</script>
-
 <!-- ── Notion-style right section nav ── -->
 <style>
   #section-nav {
@@ -2249,11 +2161,6 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.10);
     pointer-events: none;
     backdrop-filter: blur(6px);
-  }
-  .dark-mode .sn-label {
-    color: #e8edf2;
-    background: rgba(30,40,55,0.92);
-    border-color: rgba(255,255,255,0.10);
   }
   .sn-dot {
     width: 28px;
