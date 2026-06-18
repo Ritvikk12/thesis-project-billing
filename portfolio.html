@@ -70,7 +70,7 @@
       backdrop-filter: blur(10px);
       display: flex;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: space-between;
       padding: 0 48px;
       height: 52px;
       box-shadow: 0 1px 0 rgba(255,255,255,.07);
@@ -90,6 +90,39 @@
       filter: brightness(0) invert(1);
     }
     .nav-sep { width: 1px; height: 18px; background: rgba(255,255,255,.2); }
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 16px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255,255,255,.85);
+      border: 1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.08);
+      text-decoration: none;
+      transition: background .2s, border-color .2s, color .2s;
+      letter-spacing: .2px;
+      white-space: nowrap;
+    }
+    .btn-back:hover { background: rgba(255,255,255,.16); border-color: rgba(255,255,255,.40); color: #fff; text-decoration: none; }
+    .btn-back svg { flex-shrink: 0; }
+    .btn-back-light {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 22px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255,255,255,.80);
+      border: 1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.08);
+      text-decoration: none;
+      transition: background .2s, border-color .2s, color .2s;
+    }
+    .btn-back-light:hover { background: rgba(255,255,255,.16); border-color: rgba(255,255,255,.40); color: #fff; text-decoration: none; }
 
     /* ── Section wrappers ── */
     section { padding: 88px 48px; }
@@ -577,6 +610,10 @@
     <div class="nav-sep"></div>
     <span>Reactive to Proactive Project Billing</span>
   </div>
+  <a href="https://www.ritvikkolhe.com/projects-1" class="btn-back">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.5 2.5L4 7l4.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Back to Projects
+  </a>
 </nav>
 
 <!-- ═══════════════════════════════════════════════════
@@ -1374,7 +1411,11 @@
   </div>
   <div class="footer-right">
     © 2026 SAP SE or an SAP affiliate company. All rights reserved.<br>
-    Research conducted in collaboration with Technische Hochschule Ingolstadt.
+    Research conducted in collaboration with Technische Hochschule Ingolstadt.<br><br>
+    <a href="https://www.ritvikkolhe.com/projects-1" class="btn-back-light">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.5 2.5L4 7l4.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to Projects
+    </a>
   </div>
 </footer>
 
